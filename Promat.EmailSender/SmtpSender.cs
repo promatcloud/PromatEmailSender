@@ -13,7 +13,7 @@ namespace Promat.EmailSender
     {
         private IWebProxy _webProxy;
         private ILogger<SmtpSender> _logger;
-        private string _host, _user, _password;
+        private string _host, _user, _password, _fromEmail, _fromName;
         private int _port;
         private bool _tlsEnabled;
         private SmtpClient _client;
@@ -30,20 +30,23 @@ namespace Promat.EmailSender
         {
             Initialize(null, host, user, password, port, tlsEnabled);
         }
-        public SmtpSender(ILogger<SmtpSender> logger, string host, int port, string user, string password, bool tlsEnabled = default)
+        public SmtpSender(ILogger<SmtpSender> logger, string host, int port, string user, string password, bool tlsEnabled = default, string defaultFromEmail = default, string defauiFromName = default)
         {
-            Initialize(logger, host, user, password, port, tlsEnabled);
+            Initialize(logger, host, user, password, port, tlsEnabled, defaultFromEmail, defauiFromName);
         }
 
-        private void Initialize(ILogger<SmtpSender> logger = null, string host = default, string user = default, string password = default, int port = -1, bool tlsEnabled = default, SmtpClient smtpClient = null)
+        private void Initialize(ILogger<SmtpSender> logger = null, string host = default, string user = default, string password = default, int port = -1, bool tlsEnabled = default, string fromEmail = null, string fromName = null, SmtpClient smtpClient = null)
         {
             _logger = logger;
+            _logger?.LogTrace("Se ha creado una nueva instancia de {sender}", nameof(SmtpSender));
             _host = host;
             _user = user;
             _password = password;
             _port = port;
             _tlsEnabled = tlsEnabled;
             _client = smtpClient;
+            _fromEmail = fromEmail;
+            _fromName = fromName;
 
             if (string.IsNullOrWhiteSpace(_host) ||
                 string.IsNullOrWhiteSpace(_user) ||
@@ -52,6 +55,7 @@ namespace Promat.EmailSender
             {
                 if (_client != null)
                 {
+                    _logger?.LogTrace("El host, puerto, user, password y tlsEnabled se obtiene del SmtpClient facilitado");
                     _host = _client.Host;
                     _port = _client.Port;
                     _tlsEnabled = _client.EnableSsl;
@@ -66,13 +70,6 @@ namespace Promat.EmailSender
             }
             else
             {
-                _logger?.LogDebug("Se construye {clase} con los siguientes parámetros => Host: {host}, Port: {port}, TLS Enabled: {tls}, User: {user}, Pass: {pass}",
-                                 nameof(SmtpSender),
-                                 _host,
-                                 _port,
-                                 _tlsEnabled,
-                                 _user,
-                                 _password);
                 _client = new SmtpClient(_host, _port)
                 {
                     EnableSsl = _tlsEnabled,
@@ -81,10 +78,38 @@ namespace Promat.EmailSender
                     Credentials = new NetworkCredential(_user, _password)
                 };
             }
+            _logger?.LogDebug("Se construye {clase} con los siguientes parámetros => Host: {host}, Port: {port}, TLS Enabled: {tls}, User: {user}, Pass: {pass}, FromEmail: {fromEmail}, FromName: {fromName}",
+                             nameof(SmtpSender),
+                             _host,
+                             _port,
+                             _tlsEnabled,
+                             _user,
+                             _password,
+                             _fromEmail,
+                             _fromName);
         }
 
-        public void SetWebProxy(IWebProxy webProxy) => _webProxy = webProxy;
-
+        public void SetWebProxy(IWebProxy webProxy)
+        {
+            _webProxy = webProxy;
+            if (_webProxy != null)
+            {
+                if (_webProxy is WebProxy proxy)
+                {
+                    _logger?.LogDebug("Se establece un proxy => Url: {url}, DefaultCredentials: {defaultCredentials}",
+                                      proxy.Address,
+                                      proxy.UseDefaultCredentials);
+                }
+                else
+                {
+                    _logger?.LogDebug("Se establece un proxy");
+                }
+            }
+            else
+            {
+                _logger?.LogDebug("Se establece el proxy a null");
+            }
+        }
         public Task SendEmailAsync(string toEmail, string subject, string htmlMessage) =>
                 SendEmailAsync(toEmail, null, subject, htmlMessage, null, null, null);
         public Task SendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextMessage) =>
@@ -95,7 +120,15 @@ namespace Promat.EmailSender
         {
             if (fromEmail == null)
             {
+                fromEmail = _fromEmail;
+            }
+            if (fromEmail == null)
+            {
                 fromEmail = _user;
+            }
+            if (fromName == null)
+            {
+                fromName = _fromName;
             }
 
             var esHtlm = !string.IsNullOrWhiteSpace(htmlMessage);

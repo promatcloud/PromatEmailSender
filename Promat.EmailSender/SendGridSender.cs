@@ -39,13 +39,14 @@ namespace Promat.EmailSender
         {
             Initialize(apiKey, logger);
         }
-        public SendGridSender(string apiKey, ILogger<SendGridSender> logger, string fromEmail, string fromName)
+        public SendGridSender(string apiKey, ILogger<SendGridSender> logger, string fromEmail, string fromName, IWebProxy webProxy = null)
         {
             _fromEmail = fromEmail;
             _fromName = fromName;
+            _webProxy = webProxy;
             Initialize(apiKey, logger);
         }
-        public SendGridSender(IWebProxy webProxy, ILogger<SendGridSender> logger, HttpClient httpClient, string apiKey)
+        public SendGridSender(string apiKey, ILogger<SendGridSender> logger, IWebProxy webProxy, HttpClient httpClient)
         {
             _webProxy = webProxy;
             _logger = logger;
@@ -82,7 +83,6 @@ namespace Promat.EmailSender
 
         protected async Task ProtectedSendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextMessage = null, string fromEmail = null, string fromName = null, IEnumerable<string> cc = null, Attachment[] attachments = null, CancellationToken cancellationToken = default)
         {
-            //var apiKey = GetSendGridApiKey();
             var client = new SendGridClient(_httpClient, _apiKey);
             var from = new EmailAddress(fromEmail ?? _fromEmail, fromName ?? _fromName);
             var tos = new List<EmailAddress> { new EmailAddress(toEmail) };
@@ -101,12 +101,12 @@ namespace Promat.EmailSender
                 }
             }
 
-            _logger.LogDebug("");
+            _logger?.LogDebug("Se envía un correo con el asunto {asunto} a la dirección {to} desde {from}", msg.Subject, msg.Personalizations.SelectMany(p => p.Tos).Select(t => t.Email), msg.From.Email);
             var response = await client.SendEmailAsync(msg, cancellationToken);
 
             if (response.StatusCode != HttpStatusCode.Accepted)
             {
-                _logger.LogWarning("Respuesta de SendEMail: {StatusCode}", response.StatusCode);
+                _logger?.LogWarning("Respuesta de SendGrid: {StatusCode}", response.StatusCode);
                 var json = await response.Body.ReadAsStringAsync();
                 var myJObject = JObject.Parse(json);
                 var message = "Response:";
@@ -114,11 +114,11 @@ namespace Promat.EmailSender
                 {
                     message += $"{Environment.NewLine} - {pair.Key}: {pair.Value}";
                 }
-                _logger.LogWarning(message);
+                _logger?.LogWarning(message);
             }
             else
             {
-                _logger.LogDebug("Respuesta de SendEMail: {StatusCode}", response.StatusCode);
+                _logger?.LogDebug("Respuesta de SendGrid: {StatusCode}", response.StatusCode);
             }
         }
 
