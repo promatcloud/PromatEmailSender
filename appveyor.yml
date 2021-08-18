@@ -7,7 +7,7 @@ environment:
 
 init:
 - ps: echo "$env:packageVersion"
-- ps: $env:nugetVersion = "$env:packageVersion-rc-$env:appveyor_build_number"
+- ps: $env:nugetVersion = "$env:packageVersion.$env:appveyor_build_number"
 - ps: echo "$env:nugetVersion"
 
 configuration: Release
