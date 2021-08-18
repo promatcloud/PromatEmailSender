@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Promat.EmailSender.Extensions;
 using Promat.EmailSender.Interfaces;
 using Serilog;
-
-// DI, Serilog, Settings
 
 namespace Console.Net5
 {
@@ -20,24 +19,43 @@ namespace Console.Net5
             var builder = new ConfigurationBuilder();
             BuildConfiguration(builder);
             CreateLogger(builder);
+            var host = CreateHost(builder);
 
-            var host = Host.CreateDefaultBuilder()
+            var res = "y";
+            do
+            {
+                await SendMailAsync(host);
+                System.Console.WriteLine("Email enviado");
+                System.Console.Write("¿quieres mandar otro? (y/n): ");
+                res = System.Console.ReadLine();
+            } while (res == "y");
+        }
+        private static async Task SendMailAsync(IHost host)
+        {
+            System.Console.WriteLine("Introduzca los datos para enviar el correo");
+            System.Console.WriteLine("==========================================");
+            System.Console.WriteLine("");
+            System.Console.Write("Para: ");
+            var to = System.Console.ReadLine();
+            System.Console.Write("Asunto: ");
+            var subject = System.Console.ReadLine();
+            System.Console.Write("Mensaje: ");
+            var message = System.Console.ReadLine();
+
+            var emailSender = host.Services.GetRequiredService<IEmailSender>();
+            await emailSender.SendEmailAsync(to, subject, null, message);
+        }
+        private static IHost CreateHost(ConfigurationBuilder builder)
+        {
+            return Host.CreateDefaultBuilder()
                     .ConfigureServices((context, services) =>
                     {
-                        services.AddTransient<ISomeService, SomeService>();
                         services.AddPromatEmailSenderSmtp(builder.Build());
                     })
                     .ConfigureLogging((context, loggingBuilder) => loggingBuilder.AddSerilog())
                     .UseSerilog()
                     .Build();
-
-            host.Services.GetRequiredService<ISomeService>().Run();
-
-            var emailSender = host.Services.GetService<IEmailSender>();
-
-            await Task.CompletedTask;
         }
-
         static void BuildConfiguration(IConfigurationBuilder builder)
         {
             builder.SetBasePath(Directory.GetCurrentDirectory())

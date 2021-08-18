@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Promat.EmailSender.Interfaces;
@@ -15,8 +18,10 @@ namespace Promat.EmailSender
         private ILogger<SmtpSender> _logger;
         private string _host, _user, _password, _fromEmail, _fromName;
         private int _port;
-        private bool _tlsEnabled;
+        private bool _tlsEnabled, _ignoreRemoteCertificateChainErrors, _ignoreRemoteCertificateNameMismatch, _ignoreRemoteCertificateNotAvailable;
         private SmtpClient _client;
+
+        private bool IgnoreSomeServerCertificateError => _ignoreRemoteCertificateChainErrors || _ignoreRemoteCertificateNameMismatch || _ignoreRemoteCertificateNotAvailable;
 
         public SmtpSender(SmtpClient smtpClient)
         {
@@ -30,12 +35,16 @@ namespace Promat.EmailSender
         {
             Initialize(null, host, user, password, port, tlsEnabled);
         }
-        public SmtpSender(ILogger<SmtpSender> logger, string host, int port, string user, string password, bool tlsEnabled = default, string defaultFromEmail = default, string defauiFromName = default)
+        public SmtpSender(string host, int port, string user, string password, bool tlsEnabled = default, string defaultFromEmail = default, string defaultFromName = default, bool ignoreRemoteCertificateChainErrors = false, bool ignoreRemoteCertificateNameMismatch = false, bool ignoreRemoteCertificateNotAvailable = false)
         {
-            Initialize(logger, host, user, password, port, tlsEnabled, defaultFromEmail, defauiFromName);
+            Initialize(null, host, user, password, port, tlsEnabled, defaultFromEmail, defaultFromName, null, ignoreRemoteCertificateChainErrors, ignoreRemoteCertificateNameMismatch, ignoreRemoteCertificateNotAvailable);
+        }
+        public SmtpSender(ILogger<SmtpSender> logger, string host, int port, string user, string password, bool tlsEnabled = default, string defaultFromEmail = default, string defaultFromName = default, bool ignoreRemoteCertificateChainErrors = false, bool ignoreRemoteCertificateNameMismatch = false, bool ignoreRemoteCertificateNotAvailable = false)
+        {
+            Initialize(logger, host, user, password, port, tlsEnabled, defaultFromEmail, defaultFromName, null, ignoreRemoteCertificateChainErrors, ignoreRemoteCertificateNameMismatch, ignoreRemoteCertificateNotAvailable);
         }
 
-        private void Initialize(ILogger<SmtpSender> logger = null, string host = default, string user = default, string password = default, int port = -1, bool tlsEnabled = default, string fromEmail = null, string fromName = null, SmtpClient smtpClient = null)
+        private void Initialize(ILogger<SmtpSender> logger = null, string host = default, string user = default, string password = default, int port = -1, bool tlsEnabled = default, string fromEmail = null, string fromName = null, SmtpClient smtpClient = null, bool ignoreRemoteCertificateChainErrors = false, bool ignoreRemoteCertificateNameMismatch = false, bool ignoreRemoteCertificateNotAvailable = false)
         {
             _logger = logger;
             _logger?.LogTrace("Se ha creado una nueva instancia de {sender}", nameof(SmtpSender));
@@ -47,6 +56,9 @@ namespace Promat.EmailSender
             _client = smtpClient;
             _fromEmail = fromEmail;
             _fromName = fromName;
+            _ignoreRemoteCertificateChainErrors = ignoreRemoteCertificateChainErrors;
+            _ignoreRemoteCertificateNameMismatch = ignoreRemoteCertificateNameMismatch;
+            _ignoreRemoteCertificateNotAvailable = ignoreRemoteCertificateNotAvailable;
 
             if (string.IsNullOrWhiteSpace(_host) ||
                 string.IsNullOrWhiteSpace(_user) ||
@@ -170,12 +182,60 @@ namespace Promat.EmailSender
             }
 
             _logger?.LogDebug("Se envía un correo con el asunto {asunto} a la dirección {to} desde {from}", mailMessage.Subject, mailMessage.To.FirstOrDefault()?.Address, mailMessage.From.Address);
-            await _client.SendMailAsync(mailMessage);
+            RemoteCertificateValidationCallback originalCallback = null;
 
-            if (_webProxy != null)
+            try
             {
-                WebRequest.DefaultWebProxy = defaultProxy;
+                if (IgnoreSomeServerCertificateError)
+                {
+                    originalCallback = ServicePointManager.ServerCertificateValidationCallback;
+                    ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+                }
+                await _client.SendMailAsync(mailMessage);
             }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Error enviando correo con StmpSender");
+                throw;
+            }
+            finally
+            {
+                if (IgnoreSomeServerCertificateError)
+                {
+                    ServicePointManager.ServerCertificateValidationCallback = originalCallback;
+                }
+                if (_webProxy != null)
+                {
+                    WebRequest.DefaultWebProxy = defaultProxy;
+                }
+            }
+
+        }
+        private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslpolicyerrors)
+        {
+            var ignoredErrors = SslPolicyErrors.None;
+            if (_ignoreRemoteCertificateChainErrors)// self-signed
+            {
+                ignoredErrors |= SslPolicyErrors.RemoteCertificateChainErrors;
+            }
+            if (_ignoreRemoteCertificateNameMismatch)// name mismatch
+            {
+                ignoredErrors |= SslPolicyErrors.RemoteCertificateNameMismatch;
+            }
+            if (_ignoreRemoteCertificateNotAvailable)
+            {
+                ignoredErrors |= SslPolicyErrors.RemoteCertificateNotAvailable;
+            }
+
+            var valid = (sslpolicyerrors & ~ignoredErrors) == SslPolicyErrors.None;
+            _logger?.LogDebug("{method} invoked\r\nCertificate data: {subject}\r\nSSL errors: {errors}\r\nIgnored errors: {ignoredErrors}\r\nValidation result: {result}",
+                              nameof(ServerCertificateValidationCallback),
+                              new { certificate.Subject, certificate.Issuer },
+                              sslpolicyerrors,
+                              ignoredErrors,
+                              valid);
+
+            return valid;
         }
     }
 }

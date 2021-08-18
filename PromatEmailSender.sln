@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Promat.EmailSender", "Proma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Net5", "Console.Net5\Console.Net5.csproj", "{ADC21BC6-3C75-4F56-AA3F-1D8F846E1972}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Net4.7.2", "Console.Net4.7.2\Console.Net4.7.2.csproj", "{6623A2A2-F7EC-43BF-9C98-A5DA4F2134A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{ADC21BC6-3C75-4F56-AA3F-1D8F846E1972}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADC21BC6-3C75-4F56-AA3F-1D8F846E1972}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADC21BC6-3C75-4F56-AA3F-1D8F846E1972}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6623A2A2-F7EC-43BF-9C98-A5DA4F2134A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6623A2A2-F7EC-43BF-9C98-A5DA4F2134A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6623A2A2-F7EC-43BF-9C98-A5DA4F2134A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6623A2A2-F7EC-43BF-9C98-A5DA4F2134A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

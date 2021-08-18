@@ -24,7 +24,14 @@ namespace Promat.EmailSender.Extensions
             services.AddTransient<IEmailSender, SmtpSender>(provider =>
             {
                 var options = provider.GetRequiredService<IOptions<PromatEmailSenderOptions>>().Value;
-                var smtpSender = new SmtpSender(provider.GetService<ILogger<SmtpSender>>(), options.Smtp.Host, options.Smtp.Port, options.Smtp.User, options.Smtp.Password, options.Smtp.TlsEnabled, options.DefaultFromEmail, options.DefaultFromName);
+                var smtpSender = new SmtpSender(provider.GetService<ILogger<SmtpSender>>(), 
+                                                options.Smtp.Host, options.Smtp.Port, 
+                                                options.Smtp.User, options.Smtp.Password, 
+                                                options.Smtp.TlsEnabled, 
+                                                options.DefaultFromEmail, options.DefaultFromName, 
+                                                options.Smtp.IgnoreRemoteCertificateChainErrors, 
+                                                options.Smtp.IgnoreRemoteCertificateNameMismatch, 
+                                                options.Smtp.IgnoreRemoteCertificateNotAvailable);
                 if (!string.IsNullOrWhiteSpace(options.Proxy))
                 {
                     smtpSender.SetWebProxy(new WebProxy
@@ -83,6 +90,18 @@ namespace Promat.EmailSender.Extensions
             if (bool.TryParse(configuration[SmtpOptions.TlsEnabledKey], out var tlsEnabled))
             {
                 options.TlsEnabled = tlsEnabled;
+            }
+            if (bool.TryParse(configuration[SmtpOptions.IgnoreRemoteCertificateChainErrorsKey], out var ignoreRemoteCertificateChainErrors))
+            {
+                options.IgnoreRemoteCertificateChainErrors = ignoreRemoteCertificateChainErrors;
+            }
+            if (bool.TryParse(configuration[SmtpOptions.IgnoreRemoteCertificateNameMismatchKey], out var ignoreRemoteCertificateNameMismatch))
+            {
+                options.IgnoreRemoteCertificateNameMismatch = ignoreRemoteCertificateNameMismatch;
+            }
+            if (bool.TryParse(configuration[SmtpOptions.IgnoreRemoteCertificateNotAvailableKey], out var ignoreRemoteCertificateNotAvailable))
+            {
+                options.IgnoreRemoteCertificateNotAvailable = ignoreRemoteCertificateNotAvailable;
             }
         }
         private static void MapSendGridOptions(SendGridOptions options, IConfiguration configuration)
