@@ -5,16 +5,11 @@ namespace Console.Net4._7._2
 {
     class Program
     {
-        private const string DefaultFromEmail = "**********************";
-        private const string DefaultFromName = "**********************";
         private const string SmtpHost = "mail.server.com";
         private const int SmtpPort = 587;
         private const bool SmtpTlsEnabled = true;
         private const string SmtpUser = "user@server.com";
         private const string SmtpPassword = "**********************";
-        private const bool IgnoreRemoteCertificateChainErrors = false;
-        private const bool SmtpIgnoreRemoteCertificateNameMismatch = false;
-        private const bool SmtpIgnoreRemoteCertificateNotAvailable = false;
         
         static async Task Main(string[] args)
         {
@@ -33,7 +28,7 @@ namespace Console.Net4._7._2
             System.Console.Write("Mensaje: ");
             var message = System.Console.ReadLine();
 
-            var emailSender = new SmtpSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled, DefaultFromEmail, DefaultFromName);
+            var emailSender = new SmtpSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled);
             await emailSender.SendEmailAsync(to, subject, null, message);
         }
     }

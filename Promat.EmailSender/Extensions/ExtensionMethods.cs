@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,29 @@ using Promat.EmailSender.Options;
 
 namespace Promat.EmailSender.Extensions
 {
+    public class MyService
+    {
+        private readonly IEmailSender _emailSender;
+
+        public MyService(IEmailSender emailSender)
+        {
+            _emailSender = emailSender;
+        }
+
+        public async Task Send()
+        {
+            await _emailSender.SendEmailAsync("toEmail@mail.com", "subject", "<p>My HTML message<p>");
+        }
+    }
     public static class ExtensionMethods
     {
+        /// <summary>
+        /// Añade los servicios necesarios para poder enviar correos mediante SMTP resolviendo el servicio <see cref="IEmailSender"/>
+        /// <para>Configura las opciones <see cref="PromatEmailSenderOptions"/> y <see cref="SmtpOptions"/> que podrán ser resueltas por el inyector de dependencias mediante <see cref="IOptions{TOptions}"/> donde TOptions sea <see cref="PromatEmailSenderOptions"/> o <see cref="SmtpOptions"/></para>
+        /// </summary>
+        /// <param name="services">Colección de servicios</param>
+        /// <param name="configuration">Configuración de la aplicación</param>
+        /// <returns></returns>
         public static IServiceCollection AddPromatEmailSenderSmtp(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<PromatEmailSenderOptions>(options =>

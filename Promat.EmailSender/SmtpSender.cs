@@ -101,6 +101,10 @@ namespace Promat.EmailSender
                              _fromName);
         }
 
+        /// <summary>
+        /// Establece un <see cref="IWebProxy"/> a través del cual se enviará
+        /// </summary>
+        /// <param name="webProxy"></param>
         public void SetWebProxy(IWebProxy webProxy)
         {
             _webProxy = webProxy;
@@ -108,7 +112,7 @@ namespace Promat.EmailSender
             {
                 if (_webProxy is WebProxy proxy)
                 {
-                    _logger?.LogDebug("Se establece un proxy => Url: {url}, DefaultCredentials: {defaultCredentials}",
+                    _logger?.LogDebug("Se establece un proxy => Url: {url}, UseDefaultCredentials: {defaultCredentials}",
                                       proxy.Address,
                                       proxy.UseDefaultCredentials);
                 }
@@ -122,12 +126,49 @@ namespace Promat.EmailSender
                 _logger?.LogDebug("Se establece el proxy a null");
             }
         }
+        /// <summary>
+        /// Envía un email según los parámetros configurados
+        /// </summary>
+        /// <param name="toEmail">Dirección de destino</param>
+        /// <param name="subject">Asunto del correo</param>
+        /// <param name="htmlMessage">Cuerpo Html del correo</param>
+        /// <returns></returns>
         public Task SendEmailAsync(string toEmail, string subject, string htmlMessage) =>
                 SendEmailAsync(toEmail, null, subject, htmlMessage, null, null, null);
+        /// <summary>
+        /// Envía un email según los parámetros configurados
+        /// </summary>
+        /// <param name="toEmail">Dirección de destino</param>
+        /// <param name="subject">Asunto del correo</param>
+        /// <param name="htmlMessage">Cuerpo Html del correo</param>
+        /// <param name="plainTextMessage">Texto plano del correo</param>
+        /// <returns></returns>
         public Task SendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextMessage) =>
                 SendEmailAsync(toEmail, null, subject, htmlMessage, plainTextMessage, null, null);
+        /// <summary>
+        /// Envía un email según los parámetros configurados
+        /// </summary>
+        /// <param name="toEmail">Dirección de destino</param>
+        /// <param name="cc">(opcional) Direcciones a las que mandar copia</param>
+        /// <param name="subject">Asunto del correo</param>
+        /// <param name="htmlMessage">Cuerpo Html del correo</param>
+        /// <param name="plainTextMessage">Texto plano del correo</param>
+        /// <param name="fromEmail">(opcional) Dirección desde la que se manda el correo</param>
+        /// <param name="fromName">(opcional) Nombre a mostrar para la dirección <see cref="fromEmail"/></param>
+        /// <param name="attachments">(opcional) Adjuntos a mandar con el correo.</param>
+        /// <returns></returns>
         public Task SendEmailAsync(string toEmail, string subject, string plainTextMessage, string htmlMessage, string fromEmail, string fromName) =>
                 SendEmailAsync(toEmail, null, subject, htmlMessage, plainTextMessage, fromEmail, fromName);
+        /// <summary>
+        /// Envía un email según los parámetros configurados
+        /// </summary>
+        /// <param name="toEmail">Dirección de destino</param>
+        /// <param name="subject">Asunto del correo</param>
+        /// <param name="htmlMessage">Cuerpo Html del correo</param>
+        /// <param name="plainTextMessage">Texto plano del correo</param>
+        /// <param name="fromEmail">(opcional) Dirección desde la que se manda el correo</param>
+        /// <param name="fromName">(opcional) Nombre a mostrar para la dirección <see cref="fromEmail"/></param>
+        /// <returns></returns>
         public Task SendEmailAsync(string toEmail, IEnumerable<string> cc, string subject, string htmlMessage, string plainTextMessage, string fromEmail, string fromName, params Attachment[] attachments)
         {
             if (fromEmail == null)
@@ -172,6 +213,11 @@ namespace Promat.EmailSender
 
             return SendEmailAsync(mailMessage);
         }
+        /// <summary>
+        /// Envía un email según los parámetros configurados
+        /// </summary>
+        /// <param name="mailMessage">Instancia de <see cref="MailMessage"/> a enviar</param>
+        /// <returns></returns>
         public async Task SendEmailAsync(MailMessage mailMessage)
         {
             IWebProxy defaultProxy = null;
@@ -211,6 +257,7 @@ namespace Promat.EmailSender
             }
 
         }
+
         private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslpolicyerrors)
         {
             var ignoredErrors = SslPolicyErrors.None;
