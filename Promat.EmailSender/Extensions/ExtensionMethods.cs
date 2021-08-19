@@ -10,20 +10,6 @@ using Promat.EmailSender.Options;
 
 namespace Promat.EmailSender.Extensions
 {
-    public class MyService
-    {
-        private readonly IEmailSender _emailSender;
-
-        public MyService(IEmailSender emailSender)
-        {
-            _emailSender = emailSender;
-        }
-
-        public async Task Send()
-        {
-            await _emailSender.SendEmailAsync("toEmail@mail.com", "subject", "<p>My HTML message<p>");
-        }
-    }
     public static class ExtensionMethods
     {
         /// <summary>
