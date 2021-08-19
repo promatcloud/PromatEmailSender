@@ -1,4 +1,4 @@
-version: 1.0.1.{build}
+version: 1.0.2.{build}
 
 image: Visual Studio 2019
 
@@ -40,5 +40,3 @@ deploy:
   api_key:
     secure: PQ3IodQnsJ015ao+Hg14itZsz4g9Jcd00PxNIsAAoKW7WEtIZqVjQMMjTmwY1oiO
   skip_symbols: true
-  on:
-    APPVEYOR_REPO_TAG: true
