@@ -27,7 +27,6 @@ Configuración:
     "DefaultFromEmail": "Optional: MyApplicationEmail@MyDomain.com",
     "DefaultFromName": "Optional: My application name",
     "Proxy": "Optional:https://myproxy:port",
-    // Define SendGrid or Smtp configuration, al least one. If both are defined, smtp will be used
     "SendGrid": {
       "ApiKey": "MySendGridApiKey"
     },
@@ -36,8 +35,7 @@ Configuración:
       "Port": 587,
       "TlsEnabled": true,
       "User": "user@myEmailServer.com",
-      "Password": "******************"
-      // Optionals
+      "Password": "******************",
       "IgnoreRemoteCertificateChainErrors": false,
       "IgnoreRemoteCertificateNameMismatch": false,
       "IgnoreRemoteCertificateNotAvailable": false
@@ -45,14 +43,17 @@ Configuración:
   }
 }
 ```
+Según el uso, sólo tendremos que definir el bloque "SendGrid" o el bloque "Smtp".
 Los campos de configuración obligatorios según si queremos usar SendGrid o SMTP son:
-* SendGrid: 
--- PromatEmailSender -> SendGrid -> ApiKey
-* Stmp: PromatEmailSender -> Smtp -> 
--- Host
--- Port
--- User
--- Password
+- SendGrid: 
+	- PromatEmailSender -> SendGrid
+		- ApiKey
+- Stmp: 
+	- PromatEmailSender -> Smtp -> 
+		- Host
+		- Port
+		- User
+		- Password
 
 Para utilizar el envío por **SendGrid** en nuestra app debemos agregar los servicios en la clase **startup.cs**
 ```csharp
