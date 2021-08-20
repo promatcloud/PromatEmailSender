@@ -20,6 +20,7 @@ namespace Promat.EmailSender
     {
         private readonly string _fromEmail;
         private readonly string _fromName;
+        private readonly bool _disposeHttpClient = true;
         private IWebProxy _webProxy;
         private ILogger<SendGridSender> _logger;
         private HttpClient _httpClient;
@@ -82,6 +83,7 @@ namespace Promat.EmailSender
             _logger = logger;
             _httpClient = httpClient;
             _apiKey = apiKey;
+            _disposeHttpClient = false;
         }
 
         /// <summary>
@@ -172,6 +174,13 @@ namespace Promat.EmailSender
                 _logger?.LogDebug("Se establece el proxy a null");
             }
             _httpClient = CreateHttpClient();
+        }
+        public void Dispose()
+        {
+            if(_disposeHttpClient)
+            {
+                _httpClient?.Dispose();
+            }
         }
 
         private async Task ProtectedSendEmailAsync(string toEmail, string subject, string htmlMessage, string plainTextMessage = null, string fromEmail = null, string fromName = null, IEnumerable<string> cc = null, Attachment[] attachments = null, CancellationToken cancellationToken = default)

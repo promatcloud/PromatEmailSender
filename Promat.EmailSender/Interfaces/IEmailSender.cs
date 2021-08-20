@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Promat.EmailSender.Interfaces
 {
-    public interface IEmailSender
+    public interface IEmailSender : IDisposable
     {
         /// <summary>
         /// Envía un email según los parámetros configurados

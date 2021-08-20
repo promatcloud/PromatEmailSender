@@ -14,6 +14,7 @@ namespace Promat.EmailSender
 {
     public class SmtpSender : IEmailSender
     {
+        private readonly bool _disposeSmtpClient = true;
         private IWebProxy _webProxy;
         private ILogger<SmtpSender> _logger;
         private string _host, _user, _password, _fromEmail, _fromName;
@@ -26,10 +27,12 @@ namespace Promat.EmailSender
         public SmtpSender(SmtpClient smtpClient)
         {
             Initialize(smtpClient: smtpClient);
+            _disposeSmtpClient = false;
         }
         public SmtpSender(ILogger<SmtpSender> logger, SmtpClient smtpClient)
         {
             Initialize(logger, smtpClient: smtpClient);
+            _disposeSmtpClient = false;
         }
         public SmtpSender(string host, int port, string user, string password, bool tlsEnabled = default)
         {
@@ -255,7 +258,13 @@ namespace Promat.EmailSender
                     WebRequest.DefaultWebProxy = defaultProxy;
                 }
             }
-
+        }
+        public void Dispose()
+        {
+            if (_disposeSmtpClient)
+            {
+                _client?.Dispose();
+            }
         }
 
         private bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslpolicyerrors)
