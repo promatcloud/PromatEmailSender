@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>PromatEmailSender</PackageId>
     <Authors>Promat Team</Authors>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Company>Promat Asesoría técnica de servicios</Company>
     <Description>Simple library in net standard to send emails via SMTP or SendGrid service.</Description>
     <PackageTags>smtp sendgrid email csharp netstandard</PackageTags>
@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/promatcloud/PromatEmailSender</RepositoryUrl>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Product>PromatEmailSender</Product>
-    <PackageVersion>1.0.2</PackageVersion>
+    <PackageVersion>1.0.3</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
