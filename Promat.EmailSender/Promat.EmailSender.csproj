@@ -1,32 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>PromatEmailSender</PackageId>
-    <Authors>Promat Team</Authors>
-    <Version>1.0.3</Version>
-    <Company>Promat Asesoría técnica de servicios</Company>
-    <Description>Simple library in net standard to send emails via SMTP or SendGrid service.</Description>
-    <PackageTags>smtp sendgrid email csharp netstandard</PackageTags>
-    <Copyright>Promat Asesoría técnica de servicios</Copyright>
-    <PackageProjectUrl>https://github.com/promatcloud/PromatEmailSender</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/promatcloud/PromatEmailSender</RepositoryUrl>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Product>PromatEmailSender</Product>
-    <PackageVersion>1.0.3</PackageVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<PackageId>PromatEmailSender</PackageId>
+		<Authors>Promat Team</Authors>
+		<Version>1.0.3</Version>
+		<Company>Promat Asesoría técnica de servicios</Company>
+		<Description>Simple library in net standard to send emails via SMTP or SendGrid service.</Description>
+		<PackageTags>smtp sendgrid email csharp netstandard</PackageTags>
+		<Copyright>Promat Asesoría técnica de servicios</Copyright>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/promatcloud/PromatEmailSender</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/promatcloud/PromatEmailSender</RepositoryUrl>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Product>PromatEmailSender</Product>
+		<PackageVersion>1.0.3</PackageVersion>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>bin\Any CPU\Release\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>bin\Any CPU\Release\</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
-    <PackageReference Include="SendGrid" Version="9.24.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+		<PackageReference Include="SendGrid" Version="9.24.2" />
+	</ItemGroup>
 
 </Project>
