@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Promat.EmailSender;
 
 namespace Console.Net4._7._2
@@ -13,7 +14,23 @@ namespace Console.Net4._7._2
         
         static async Task Main(string[] args)
         {
-            await SendMailAsync();
+            string userResponse;
+            do
+            {
+                try
+                {
+                    await SendMailAsync();
+                    System.Console.WriteLine("Email enviado");
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e);
+                    System.Console.WriteLine();
+                }
+                System.Console.Write("¿quieres mandar otro? (y/n): ");
+
+                userResponse = System.Console.ReadLine();
+            } while (userResponse == "y");
         }
 
         private static async Task SendMailAsync()
@@ -29,6 +46,8 @@ namespace Console.Net4._7._2
             var message = System.Console.ReadLine();
 
             var emailSender = new SmtpSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled);
+            emailSender.EnableTls11SecurityProtocol();
+            emailSender.EnableTls12SecurityProtocol();
             await emailSender.SendEmailAsync(to, subject, null, message);
         }
     }

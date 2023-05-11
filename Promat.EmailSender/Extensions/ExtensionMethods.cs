@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,8 +25,11 @@ namespace Promat.EmailSender.Extensions
                 MapPromatEmailSenderOptions(options, configuration);
                 options.Smtp = new SmtpOptions();
                 MapSmtpOptions(options.Smtp, configuration);
+                options.Smtp.SecurityProtocol = new SecurityProtocolOptions();
+                MapSecurityProtocolOptions(options.Smtp.SecurityProtocol, configuration);
             });
             services.Configure<SmtpOptions>(options => MapSmtpOptions(options, configuration));
+            services.Configure<SecurityProtocolOptions>(options => MapSecurityProtocolOptions(options, configuration));
 
             services.AddTransient<IEmailSender, SmtpSender>(provider =>
             {
@@ -40,6 +42,22 @@ namespace Promat.EmailSender.Extensions
                                                 options.Smtp.IgnoreRemoteCertificateChainErrors, 
                                                 options.Smtp.IgnoreRemoteCertificateNameMismatch, 
                                                 options.Smtp.IgnoreRemoteCertificateNotAvailable);
+                if (options.Smtp.SecurityProtocol.Ssl3)
+                {
+                    smtpSender.EnableSll3SecurityProtocol();
+                }
+                if (options.Smtp.SecurityProtocol.Tls)
+                {
+                    smtpSender.EnableTlsSecurityProtocol();
+                }
+                if (options.Smtp.SecurityProtocol.Tls11)
+                {
+                    smtpSender.EnableTls11SecurityProtocol();
+                }
+                if (options.Smtp.SecurityProtocol.Tls12)
+                {
+                    smtpSender.EnableTls12SecurityProtocol();
+                }
                 if (!string.IsNullOrWhiteSpace(options.Proxy))
                 {
                     smtpSender.SetWebProxy(new WebProxy
@@ -110,6 +128,25 @@ namespace Promat.EmailSender.Extensions
             if (bool.TryParse(configuration[SmtpOptions.IgnoreRemoteCertificateNotAvailableKey], out var ignoreRemoteCertificateNotAvailable))
             {
                 options.IgnoreRemoteCertificateNotAvailable = ignoreRemoteCertificateNotAvailable;
+            }
+        }
+        private static void MapSecurityProtocolOptions(SecurityProtocolOptions options, IConfiguration configuration)
+        {
+            if (bool.TryParse(configuration[SecurityProtocolOptions.Ssl3Key], out var ssl3))
+            {
+                options.Ssl3 = ssl3;
+            }
+            if (bool.TryParse(configuration[SecurityProtocolOptions.TlsKey], out var tls))
+            {
+                options.Tls = tls;
+            }
+            if (bool.TryParse(configuration[SecurityProtocolOptions.Tls11Key], out var tls11))
+            {
+                options.Tls11 = tls11;
+            }
+            if (bool.TryParse(configuration[SecurityProtocolOptions.Tls12Key], out var tls12))
+            {
+                options.Tls12 = tls12;
             }
         }
         private static void MapSendGridOptions(SendGridOptions options, IConfiguration configuration)

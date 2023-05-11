@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -19,10 +18,19 @@ namespace Promat.EmailSender
         private ILogger<SmtpSender> _logger;
         private string _host, _user, _password, _fromEmail, _fromName;
         private int _port;
-        private bool _tlsEnabled, _ignoreRemoteCertificateChainErrors, _ignoreRemoteCertificateNameMismatch, _ignoreRemoteCertificateNotAvailable;
+
+        private bool _tlsEnabled,
+            _ignoreRemoteCertificateChainErrors,
+            _ignoreRemoteCertificateNameMismatch,
+            _ignoreRemoteCertificateNotAvailable,
+            _ssl3,
+            _tls,
+            _tls11,
+            _tls12;
         private SmtpClient _client;
 
         private bool IgnoreSomeServerCertificateError => _ignoreRemoteCertificateChainErrors || _ignoreRemoteCertificateNameMismatch || _ignoreRemoteCertificateNotAvailable;
+        private bool EstablishedSomeProtocol() => _ssl3 || _tls || _tls11 || _tls12;
 
         public SmtpSender(SmtpClient smtpClient)
         {
@@ -46,6 +54,23 @@ namespace Promat.EmailSender
         {
             Initialize(logger, host, user, password, port, tlsEnabled, defaultFromEmail, defaultFromName, null, ignoreRemoteCertificateChainErrors, ignoreRemoteCertificateNameMismatch, ignoreRemoteCertificateNotAvailable);
         }
+
+        /// <summary>
+        /// Specifies the Secure Socket Layer (SSL) 3.0 security protocol. SSL 3.0 has been superseded by the Transport Layer Security (TLS) protocol and is provided for backward compatibility only.
+        /// </summary>
+        public void EnableSll3SecurityProtocol() => _ssl3 = true;
+        /// <summary>
+        /// Specifies the Transport Layer Security (TLS) 1.0 security protocol. The TLS 1.0 protocol is defined in IETF RFC 2246.
+        /// </summary>
+        public void EnableTlsSecurityProtocol() => _tls = true;
+        /// <summary>
+        /// Specifies the Transport Layer Security (TLS) 1.1 security protocol. The TLS 1.1 protocol is defined in IETF RFC 4346. On Windows systems, this value is supported starting with Windows 7.
+        /// </summary>
+        public void EnableTls11SecurityProtocol() => _tls11 = true;
+        /// <summary>
+        /// Specifies the Transport Layer Security (TLS) 1.2 security protocol. The TLS 1.2 protocol is defined in IETF RFC 5246. On Windows systems, this value is supported starting with Windows 7.
+        /// </summary>
+        public void EnableTls12SecurityProtocol() => _tls12 = true;
 
         private void Initialize(ILogger<SmtpSender> logger = null, string host = default, string user = default, string password = default, int port = -1, bool tlsEnabled = default, string fromEmail = null, string fromName = null, SmtpClient smtpClient = null, bool ignoreRemoteCertificateChainErrors = false, bool ignoreRemoteCertificateNameMismatch = false, bool ignoreRemoteCertificateNotAvailable = false)
         {
@@ -152,13 +177,11 @@ namespace Promat.EmailSender
         /// Envía un email según los parámetros configurados
         /// </summary>
         /// <param name="toEmail">Dirección de destino</param>
-        /// <param name="cc">(opcional) Direcciones a las que mandar copia</param>
         /// <param name="subject">Asunto del correo</param>
         /// <param name="htmlMessage">Cuerpo Html del correo</param>
         /// <param name="plainTextMessage">Texto plano del correo</param>
         /// <param name="fromEmail">(opcional) Dirección desde la que se manda el correo</param>
         /// <param name="fromName">(opcional) Nombre a mostrar para la dirección <see cref="fromEmail"/></param>
-        /// <param name="attachments">(opcional) Adjuntos a mandar con el correo.</param>
         /// <returns></returns>
         public Task SendEmailAsync(string toEmail, string subject, string plainTextMessage, string htmlMessage, string fromEmail, string fromName) =>
                 SendEmailAsync(toEmail, null, subject, htmlMessage, plainTextMessage, fromEmail, fromName);
@@ -166,11 +189,13 @@ namespace Promat.EmailSender
         /// Envía un email según los parámetros configurados
         /// </summary>
         /// <param name="toEmail">Dirección de destino</param>
+        /// <param name="cc">(opcional) Direcciones a las que mandar copia</param>
         /// <param name="subject">Asunto del correo</param>
         /// <param name="htmlMessage">Cuerpo Html del correo</param>
         /// <param name="plainTextMessage">Texto plano del correo</param>
         /// <param name="fromEmail">(opcional) Dirección desde la que se manda el correo</param>
         /// <param name="fromName">(opcional) Nombre a mostrar para la dirección <see cref="fromEmail"/></param>
+        /// <param name="attachments">(opcional) Adjuntos a mandar con el correo.</param>
         /// <returns></returns>
         public Task SendEmailAsync(string toEmail, IEnumerable<string> cc, string subject, string htmlMessage, string plainTextMessage, string fromEmail, string fromName, params Attachment[] attachments)
         {
@@ -187,8 +212,8 @@ namespace Promat.EmailSender
                 fromName = _fromName;
             }
 
-            var esHtlm = !string.IsNullOrWhiteSpace(htmlMessage);
-            var mensaje = esHtlm ? htmlMessage : plainTextMessage;
+            var isBodyHtml = !string.IsNullOrWhiteSpace(htmlMessage);
+            var mensaje = isBodyHtml ? htmlMessage : plainTextMessage;
 
             var mailMessage = new MailMessage
             {
@@ -196,7 +221,7 @@ namespace Promat.EmailSender
                 To = { toEmail },
                 Subject = subject,
                 Body = mensaje,
-                IsBodyHtml = esHtlm
+                IsBodyHtml = isBodyHtml
             };
 
             if (cc != null)
@@ -232,6 +257,7 @@ namespace Promat.EmailSender
 
             _logger?.LogDebug("Se envía un correo con el asunto {asunto} a la dirección {to} desde {from}", mailMessage.Subject, mailMessage.To.FirstOrDefault()?.Address, mailMessage.From.Address);
             RemoteCertificateValidationCallback originalCallback = null;
+            SecurityProtocolType originalProtocolType = 0;
 
             try
             {
@@ -240,11 +266,35 @@ namespace Promat.EmailSender
                     originalCallback = ServicePointManager.ServerCertificateValidationCallback;
                     ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
                 }
+                if (EstablishedSomeProtocol())
+                {
+                    originalProtocolType = ServicePointManager.SecurityProtocol;
+                    SecurityProtocolType newProtocol = 0;
+                    if (_ssl3)
+                    {
+                        newProtocol |= SecurityProtocolType.Ssl3;
+                    }
+                    if (_tls)
+                    {
+                        newProtocol |= SecurityProtocolType.Tls;
+                    }
+                    if (_tls11)
+                    {
+                        newProtocol |= SecurityProtocolType.Tls11;
+                    }
+                    if (_tls12)
+                    {
+                        newProtocol |= SecurityProtocolType.Tls12;
+                    }
+
+                    ServicePointManager.SecurityProtocol = newProtocol;
+                }
+
                 await _client.SendMailAsync(mailMessage);
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Error enviando correo con StmpSender");
+                _logger?.LogError(e, "Error enviando correo con SmtpSender");
                 throw;
             }
             finally
@@ -252,6 +302,10 @@ namespace Promat.EmailSender
                 if (IgnoreSomeServerCertificateError)
                 {
                     ServicePointManager.ServerCertificateValidationCallback = originalCallback;
+                }
+                if (EstablishedSomeProtocol())
+                {
+                    ServicePointManager.SecurityProtocol = originalProtocolType;
                 }
                 if (_webProxy != null)
                 {

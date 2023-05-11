@@ -38,7 +38,13 @@ Configuración:
       "Password": "******************",
       "IgnoreRemoteCertificateChainErrors": false,
       "IgnoreRemoteCertificateNameMismatch": false,
-      "IgnoreRemoteCertificateNotAvailable": false
+      "IgnoreRemoteCertificateNotAvailable": false,
+      "SecurityProtocol": {
+        "Ssl3": false,
+        "Tls": false,
+        "Tls11": true,
+        "Tls12": true
+      }
     }
   }
 }
@@ -105,12 +111,19 @@ public class MyService
     private readonly SendGridOptions _sendGridOptions;
     // Contiene la configuración referente a SMTP
     private readonly SmtpOptions _smtpOptions;
+    // Contiene la configuración referente a los protocolos de seguridad 
+    // de la capa de transporte
+    private readonly SecurityProtocolOptions _securityProtocolOptions;
     
-    public MyService(IOptions<PromatEmailSenderOptions> promatEmailSenderOptions, IOptions<SendGridOptions> sendGridOptions, IOptions<SmtpOptions > smtpOptions)
+    public MyService(IOptions<PromatEmailSenderOptions> promatEmailSenderOptions, 
+					 IOptions<SendGridOptions> sendGridOptions, 
+					 IOptions<SmtpOptions > smtpOptions,
+					 IOptions<SecurityProtocolOptions > securityProtocolOptions)
     {
         _promatEmailSenderOptions = promatEmailSenderOptions.Value;
         _sendGridOptions= sendGridOptions.Value;
         _smtpOptions= smtpOptions.Value;
+        _securityProtocolOptions= securityProtocolOptions.Value;
     }
 }
 ```

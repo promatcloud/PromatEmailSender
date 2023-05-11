@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Promat.EmailSender.Extensions;
 using Promat.EmailSender.Interfaces;
 using Serilog;
@@ -21,14 +19,14 @@ namespace Console.Net5
             CreateLogger(builder);
             var host = CreateHost(builder);
 
-            var res = "y";
+            string userResponse;
             do
             {
                 await SendMailAsync(host);
                 System.Console.WriteLine("Email enviado");
                 System.Console.Write("¿quieres mandar otro? (y/n): ");
-                res = System.Console.ReadLine();
-            } while (res == "y");
+                userResponse = System.Console.ReadLine();
+            } while (userResponse == "y");
         }
         private static async Task SendMailAsync(IHost host)
         {
@@ -60,7 +58,7 @@ namespace Console.Net5
         {
             builder.SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production")}.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true, reloadOnChange: true)
                     .AddUserSecrets<Program>(true)
                     .AddEnvironmentVariables();
         }

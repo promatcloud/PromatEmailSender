@@ -1,4 +1,5 @@
-﻿using System.Net.Mail;
+﻿using System.Net;
+using System.Net.Mail;
 using System.Net.Security;
 
 namespace Promat.EmailSender.Options
@@ -43,16 +44,23 @@ namespace Promat.EmailSender.Options
         /// </summary>
         public string Password { get; set; }
         /// <summary>
-        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateChainErrors"/> (causado comunmente por certificados autofirmados)
+        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateChainErrors"/> (causado comúnmente por certificados autofirmados)
         /// </summary>
         public bool IgnoreRemoteCertificateChainErrors { get; set; }
         /// <summary>
-        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateChainErrors"/> (causado comunmente por certificados autofirmados)
+        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateNameMismatch"/>
         /// </summary>
         public bool IgnoreRemoteCertificateNameMismatch { get; set; }
         /// <summary>
-        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateChainErrors"/> (causado comunmente por certificados autofirmados)
+        /// Indica si se deben ignorar los errores de certificado del tipo <see cref="SslPolicyErrors.RemoteCertificateNotAvailable"/>
         /// </summary>
         public bool IgnoreRemoteCertificateNotAvailable { get; set; }
+        /// <summary>
+        /// Configuración de los protocolos de seguridad utilizados por los objetos <see cref="ServicePoint"/> gestionados por el objeto  <see cref="ServicePointManager"/>
+        /// </summary>
+        /// <remarks>
+        /// Se pueden establecer múltiples protocolos
+        /// </remarks>
+        public SecurityProtocolOptions SecurityProtocol { get; set; }
     }
 }
