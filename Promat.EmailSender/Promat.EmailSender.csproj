@@ -15,6 +15,7 @@
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<Product>PromatEmailSender</Product>
 		<PackageVersion>1.0.4</PackageVersion>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
