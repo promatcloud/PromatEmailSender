@@ -1,6 +1,8 @@
-﻿using Promat.EmailSender.MailTemplate.Enums;
+﻿using Promat.EmailSender.Interfaces;
+using Promat.EmailSender.MailTemplate.Enums;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Promat.EmailSender.MailTemplate.Interfaces
 {
@@ -10,7 +12,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// Nos devuelve una instancia de MailConfigurator para acceder a sus configuraciones
         /// </summary>
         /// <returns>MailConfigurator</returns>
-        IMailConfigurator ConfigureMail();
+        IMailConfigurator Configure();
 
         /// <summary>
         /// Añade el titulo de nuestra cabecera
@@ -73,13 +75,22 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         string GetHtml();
 
         /// <summary>
+        /// Permite establecer una instancia de <see cref="IEmailSender"/> para poder utilizar el método <see cref="SendMailAsync"/>
+        /// </summary>
+        /// <param name="emailSender">Instancia de <see cref="IEmailSender"/></param>
+        /// <returns></returns>
+        IMailMaker SetEmailSender(IEmailSender emailSender);
+
+        /// <summary>
         /// Envía el correo utilizando en el cuerpo la plantilla html configurada.
         /// </summary>
         /// <param name="to">Para quien va dirigido el correo</param>
         /// <param name="subject">Asunto del correo</param>
-        /// <param name="ccs">Copias para quien va dirigido el correo</param>
+        /// <param name="cc">Copias para quien va dirigido el correo</param>
+        /// <param name="fromEmail">Email remitente</param>
+        /// <param name="fromName">Nombre remitente</param>
         /// <returns></returns>
-        void SendMailAsync(string to, string subject, IEnumerable<string> ccs = null);
-
+        Task SendMailAsync(string to, string subject, IEnumerable<string> cc = null, string fromEmail = null,
+            string fromName = null);
     }
 }

@@ -2,6 +2,20 @@
 {
     public interface IMailConfigurator
     {
+        //TODO comentar
+        string PathPicture { get; }
+        //TODO comentar
+        string BackgroundColorLineOod { get; }
+        //TODO comentar
+        string BackgroundColorLinePair { get; }
+        //TODO comentar
+        string BackgroundColorTitulo { get; }
+        //TODO comentar
+        bool IsToggleColorInLines { get; }
+        
+        //TODO comentar
+        IMailConfigurator SetMailMaker(IMailMaker mailMaker);
+
         /// <summary>
         /// Establece el color de fondo de la linea de title.
         /// Le podemos pasar el color en diferentes formatos Ejemplo "#FF0", "#808080", "rgb(255, 255, 0)"
@@ -44,7 +58,7 @@
         /// <summary>
         /// Finaliza la configuración del objeto MailConfigurator
         /// </summary>
-        /// <returns>MailMaker</returns>
-        IMailMaker EndMailConfigurator();
+        /// <returns></returns>
+        IMailMaker EndConfiguration();
     }
 }

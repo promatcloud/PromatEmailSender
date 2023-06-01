@@ -1,38 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Promat.EmailSender.Interfaces;
 using Promat.EmailSender.MailTemplate.Enums;
 using Promat.EmailSender.MailTemplate.Interfaces;
 
 namespace Promat.EmailSender.MailTemplate
 {
+    // TODO: permitir configurar anchos de las columnas por porcentaje.
+    // TODO: permitir configurar los px de la imagen de título y ver como se comporta el texto.
+    // TODO: loggear lo que se estime
     public partial class MailMaker : IMailMaker
     {
-        private readonly MailConfigurator _mailConfigurator;
-
+        private readonly IMailConfigurator _mailConfigurator;
+        private readonly List<(int lineNumber, string text, bool isTitle, bool fontBold, HtmlTextAlignEnum htmlTextAlignEnum)> _lines = new();
+        private readonly List<(int lineNumber, string urlImage, string rightLine, int maxWidth, bool fontBoldRight)> _lineWithImagen = new();
+        private readonly List<(int lineNumber, string leftLine, string rightLine, bool fontBoldLeft, bool fontBoldRight)> _linesWithColumns = new();
+        private readonly List<(int lineNumber, IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft, bool fontBoldRight)> _multipleLinesWithColumns = new();
+        
+        private int _lineCount;
         private string _titleText;
         private HtmlHeaderEnum _htmlHeaderEnum;
-        private List<(int lineNumber, string text, bool isTitle, bool fontBold, HtmlTextAlignEnum htmlTextAlignEnum)> _lines = new();
-        private List<(int lineNumber, string urlImage, string rightLine, int maxWidth, bool fontBoldRight)> _LineWithImagen = new();
-        private List<(int lineNumber, string leftLine, string rightLine, bool fontBoldLeft, bool fontBoldRight)> _LinesWithColumns = new();
-        private List<(int lineNumber, IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft, bool fontBoldRight)> _multipleLinesWithColumns = new();
-        private int _lineCount = 0;
+        private IEmailSender _emailSender;
+        private ILogger _logger;
 
-        private MailMaker(MailConfigurator mailConfigurator)
+        private MailMaker(IMailConfigurator mailConfigurator)
         {
+            mailConfigurator.SetMailMaker(this);
             _mailConfigurator = mailConfigurator;
         }
-        
-        public static MailMaker New()
+        private MailMaker(IMailConfigurator mailConfigurator, IEmailSender emailSender, ILogger logger)
         {
-            var instance = new MailMaker(new MailConfigurator());
-            instance._mailConfigurator.SetMailMaker(instance);
-            return instance;
+            mailConfigurator.SetMailMaker(this);
+            _mailConfigurator = mailConfigurator;
+            _emailSender = emailSender;
+            _logger = logger;
         }
-        public IMailConfigurator ConfigureMail()
+
+        public static MailMaker New() => new(new MailConfigurator());
+        public static MailMaker New(IMailConfigurator configurator, IEmailSender emailSender, ILogger logger) => 
+            new(configurator, emailSender, logger);
+
+        public IMailConfigurator Configure()
         {
             return _mailConfigurator;
         }
@@ -42,25 +54,22 @@ namespace Promat.EmailSender.MailTemplate
             _htmlHeaderEnum = headerEnum;
             return this;
         }
-        public IMailMaker AddLine(string lineText, bool isTitle = false, bool fontBold = false,
-            HtmlTextAlignEnum htmlTextAlignEnum = HtmlTextAlignEnum.Left)
+        public IMailMaker AddLine(string lineText, bool isTitle = false, bool fontBold = false, HtmlTextAlignEnum htmlTextAlignEnum = HtmlTextAlignEnum.Left)
         {
             _lines.Add((_lineCount++, lineText, isTitle, fontBold, htmlTextAlignEnum));
             return this;
         }
-        public IMailMaker AddLine(string leftLine, string rightLine,
-            bool fontBoldLeft = false, bool fontBoldRight = false)
+        public IMailMaker AddLine(string leftLine, string rightLine, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
-            _LinesWithColumns.Add((_lineCount++, leftLine, rightLine, fontBoldLeft, fontBoldRight));
+            _linesWithColumns.Add((_lineCount++, leftLine, rightLine, fontBoldLeft, fontBoldRight));
             return this;
         }
         public IMailMaker AddLineWithImage(string urlImage, string rightLine, int maxWidth = 20, bool fontBoldRight = false)
         {
-            _LineWithImagen.Add((_lineCount++, urlImage, rightLine, maxWidth, fontBoldRight));
+            _lineWithImagen.Add((_lineCount++, urlImage, rightLine, maxWidth, fontBoldRight));
             return this;
         }
-        public IMailMaker AddLine(IEnumerable<string> leftLines, IEnumerable<string> rightLines,
-            bool fontBoldLeft = false, bool fontBoldRight = false)
+        public IMailMaker AddLine(IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
             _multipleLinesWithColumns.Add((_lineCount++, leftLines, rightLines, fontBoldLeft, fontBoldRight));
             return this;
@@ -68,19 +77,19 @@ namespace Promat.EmailSender.MailTemplate
         }
         public string GetHtml()
         {
-            StringBuilder _template = new StringBuilder();
+            var template = new StringBuilder();
 
-            _template.Append(TemplateHtmlHead);
-            _template.Append(TemplateHtmlConfigureHeadEmail
+            template.Append(TemplateHtmlHead);
+            template.Append(TemplateHtmlConfigureHeadEmail
                 .Replace(TagImage, _mailConfigurator.PathPicture)
                 .Replace(TagTitle, _titleText)
                 .Replace(TagHeaderSize, _htmlHeaderEnum.ToString())
             );
-            _template.Append(TemplateHtmlSeparatorLine);
+            template.Append(TemplateHtmlSeparatorLine);
 
             var numberLine = 0;
 
-            for (int lineNumber = 0; lineNumber < _lineCount; lineNumber++)
+            for (var lineNumber = 0; lineNumber < _lineCount; lineNumber++)
             {
                 if (_lines.SingleOrDefault(x => x.lineNumber == lineNumber) is { } line)
                 {
@@ -91,7 +100,7 @@ namespace Promat.EmailSender.MailTemplate
                             numberLine++;
                         }
 
-                        _template.Append(TemplateHtmlAddLine
+                        template.Append(TemplateHtmlAddLine
                             .Replace(TagLine, line.fontBold ? "<strong>" + line.text + "</strong>" : line.text)
                             .Replace(TagTextAlign, line.htmlTextAlignEnum.Print())
                             .Replace(TagColorLine,
@@ -103,14 +112,14 @@ namespace Promat.EmailSender.MailTemplate
                         );
                     }
                 }
-                if (_LineWithImagen.SingleOrDefault(x => x.lineNumber == lineNumber) is { } lineWithImagen)
+                if (_lineWithImagen.SingleOrDefault(x => x.lineNumber == lineNumber) is { } lineWithImagen)
                 {
-                    if (!string.IsNullOrWhiteSpace(lineWithImagen.urlImage )&& !string.IsNullOrWhiteSpace(lineWithImagen.rightLine))
+                    if (!string.IsNullOrWhiteSpace(lineWithImagen.urlImage) && !string.IsNullOrWhiteSpace(lineWithImagen.rightLine))
                     {
                         numberLine++;
-                        _template.Append(TemplateHtmlAddLineTwoColumns
-                            .Replace(TagLeftColumn,GetTagImage(lineWithImagen.urlImage, lineWithImagen.maxWidth))
-                            .Replace(TagRightColumn,GetTagLine(lineWithImagen.fontBoldRight, lineWithImagen.rightLine))
+                        template.Append(TemplateHtmlAddLineTwoColumns
+                            .Replace(TagLeftColumn, GetTagImage(lineWithImagen.urlImage, lineWithImagen.maxWidth))
+                            .Replace(TagRightColumn, GetTagLine(lineWithImagen.fontBoldRight, lineWithImagen.rightLine))
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                     (numberLine % 2 == 0
@@ -120,12 +129,12 @@ namespace Promat.EmailSender.MailTemplate
                             );
                     }
                 }
-                if (_LinesWithColumns.SingleOrDefault(x => x.lineNumber == lineNumber) is { } lineWithColumns)
+                if (_linesWithColumns.SingleOrDefault(x => x.lineNumber == lineNumber) is { } lineWithColumns)
                 {
                     if (!string.IsNullOrWhiteSpace(lineWithColumns.leftLine) && !string.IsNullOrWhiteSpace(lineWithColumns.rightLine))
                     {
                         numberLine++;
-                        _template.Append(TemplateHtmlAddLineTwoColumns
+                        template.Append(TemplateHtmlAddLineTwoColumns
                             .Replace(TagLeftColumn, GetTagLine(lineWithColumns.fontBoldLeft, lineWithColumns.leftLine))
                             .Replace(TagRightColumn, GetTagLine(lineWithColumns.fontBoldRight, lineWithColumns.rightLine))
                             .Replace(TagColorLine,
@@ -150,7 +159,7 @@ namespace Promat.EmailSender.MailTemplate
                             .Aggregate(tagRightColumn, (current, tagLine) => current + tagLine);
 
                         numberLine++;
-                        _template.Append(TemplateHtmlAddLineTwoColumns
+                        template.Append(TemplateHtmlAddLineTwoColumns
                             .Replace(TagLeftColumn, tagLeftColumn)
                             .Replace(TagRightColumn, tagRightColumn)
                             .Replace(TagColorLine,
@@ -163,51 +172,27 @@ namespace Promat.EmailSender.MailTemplate
                     }
                 }
             }
-            _template.Append(TemplateHtmlEnd);
-            return _template.ToString();
+            template.Append(TemplateHtmlEnd);
+            return template.ToString();
         }
-        public void SendMailAsync(string to, string subject, IEnumerable<string> ccs = null)
+        public IMailMaker SetEmailSender(IEmailSender emailSender)
         {
-            //// No enviamos correos de expiración de puestos ni de problemas de comunicaciones si es un host levantado por los test.
-            //if (DInjector.Contains<UnitTestKeysConfiguration>())
-            //{
-            //    return;
-            //}
+            _emailSender = emailSender;
+            return this;
+        }
+        public Task SendMailAsync(string to, string subject, IEnumerable<string> cc = null, string fromEmail = null, string fromName = null)
+        {
+            if (_emailSender == null)
+            {
+                throw new InvalidOperationException("No se ha establecido ninguna instancia de Promat.EmailSender.Interfaces.IEmailSender");
+            }
 
-            SmtpSender smtpSender = null;
-
-            try
-            {
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress("Enrique Salinas", "Notificaciones ProMat"),
-                    IsBodyHtml = true,
-                    Body = GetHtml(),
-                    Subject = subject
-                };
-                mailMessage.To.Add(to);
-                if (ccs != null)
-                {
-                    // TODO
-                }
-                
-                // KIKE revisar la configuración smtp
-                //smtpSender = Log.NewSmtpSender();
-                //await smtpSender.SendEmailAsync(mailMessage);
-            }
-            catch (Exception )
-            {
-                //await Log.DefaultErrorAsync(e, logActionMail: LogActionMailEnum.Nothing);
-            }
-            finally
-            {
-                smtpSender?.Dispose();
-            }
+            return _emailSender.SendEmailAsync(to, cc, subject, GetHtml(), string.Empty, fromEmail, fromName);
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _emailSender?.Dispose();
         }
     }
 }

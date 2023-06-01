@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Promat.EmailSender.Interfaces;
+using Promat.EmailSender.MailTemplate;
+using Promat.EmailSender.MailTemplate.Interfaces;
 using Promat.EmailSender.Options;
 
 namespace Promat.EmailSender.Extensions
@@ -93,6 +95,19 @@ namespace Promat.EmailSender.Extensions
                     };
                 }
                 return new SendGridSender(options.SendGrid.ApiKey, provider.GetService<ILogger<SendGridSender>>(), options.DefaultFromEmail, options.DefaultFromName, proxy);
+            });
+            return services;
+        }
+        //TODO comentar
+        public static IServiceCollection AddMailMaker(this IServiceCollection services)
+        {
+            services.AddTransient<IMailConfigurator, MailConfigurator>();
+            services.AddTransient<IMailMaker, MailMaker>(provider =>
+            {
+                var mailMaker = MailMaker.New(provider.GetRequiredService<IMailConfigurator>(),
+                    provider.GetService<IEmailSender>(),
+                    provider.GetService<ILogger<MailMaker>>());
+                return mailMaker;
             });
             return services;
         }

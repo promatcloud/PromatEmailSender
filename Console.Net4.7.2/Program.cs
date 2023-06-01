@@ -56,13 +56,13 @@ namespace Console.Net4._7._2
         private static async Task EmailTemplateTest()
         {
 
-            string[] left = new[]
+            var left = new[]
             {
                 "Columna izquierda fila 1", 
                 "Columna izquierda fila 2", 
                 "Columna izquierda fila 3"
             };
-            string[] right = new[] 
+            var right = new[] 
             {
                 "Columna derecha fila 1",
                 "Columna derecha fila 2",
@@ -93,8 +93,9 @@ namespace Console.Net4._7._2
                     .AddLine(left, right)
                     .AddLine(left, right, true)
                 ;
-            string htmlmailMaker = mailMaker.GetHtml();
-            System.Console.WriteLine(htmlmailMaker);
+            var htmlMailMaker = mailMaker.GetHtml();
+            System.Console.WriteLine(htmlMailMaker);
+            await Task.CompletedTask;
             //await mailMaker.SendMailAsync("correo@correo.com", "Prueba de correo", new []{"copia@correo.com", "copia@correo.com"});
 
         }

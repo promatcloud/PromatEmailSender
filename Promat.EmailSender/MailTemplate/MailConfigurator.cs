@@ -4,44 +4,35 @@ namespace Promat.EmailSender.MailTemplate
 {
     public class MailConfigurator : IMailConfigurator
     {
-        private MailMaker _mailMaker;
-
+        private IMailMaker _mailMaker;
         private string _backgroundColorLineOod = "#ffffff";
         private string _backgroundColorLinePair = "#E6E6E6";
         private string _backgroundColorTitle = "#FCEEE2";
-        private string _pathPicture = "https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png";
-        private bool _isToggleColorInLines = true;
-        
-        internal string PathPicture
-        {
-            get => _pathPicture;
-            set => _pathPicture = value;
-        }
-        internal string BackgroundColorLineOod
+
+        public string PathPicture { get; private set; } = "https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png";
+        public string BackgroundColorLineOod
         {
             get => $"background-color: {_backgroundColorLineOod};";
             private set => _backgroundColorLineOod = value;
         }
-        internal string BackgroundColorLinePair
+        public string BackgroundColorLinePair
         {
             get => $"background-color: {_backgroundColorLinePair};";
             private set => _backgroundColorLinePair = value;
         }
-        internal string BackgroundColorTitulo
+        public string BackgroundColorTitulo
         {
             get => $"background-color: {_backgroundColorTitle};";
             private set => _backgroundColorTitle = value;
         }
-        internal bool IsToggleColorInLines
+        public bool IsToggleColorInLines { get; private set; } = true;
+
+
+        public IMailConfigurator SetMailMaker(IMailMaker mailMaker)
         {
-            get => _isToggleColorInLines;
-            private set => _isToggleColorInLines = value;
+            _mailMaker = mailMaker;
+            return this;
         }
-
-        public MailConfigurator(){}
-
-        internal void SetMailMaker(MailMaker mailMaker) => _mailMaker = mailMaker;
-      
         public IMailConfigurator BackgroundTitle(string cssColor)
         {
             BackgroundColorTitulo = cssColor;
@@ -67,7 +58,6 @@ namespace Promat.EmailSender.MailTemplate
             IsToggleColorInLines = isDifferent;
             return this;
         }
-        public IMailMaker EndMailConfigurator() => _mailMaker;
-
+        public IMailMaker EndConfiguration() => _mailMaker;
     }
 }
