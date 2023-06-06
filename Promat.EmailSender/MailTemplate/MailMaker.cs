@@ -10,7 +10,6 @@ using Promat.EmailSender.MailTemplate.Interfaces;
 
 namespace Promat.EmailSender.MailTemplate
 {
-    // TODO: loggear lo que se estime
     public partial class MailMaker : IMailMaker
     {
         private readonly IMailConfigurator _mailConfigurator;
@@ -18,12 +17,12 @@ namespace Promat.EmailSender.MailTemplate
         private readonly List<(int lineNumber, string urlImage, string rightLine, int maxWidth, bool fontBoldRight)> _lineWithImagen = new();
         private readonly List<(int lineNumber, string leftLine, string rightLine, bool fontBoldLeft, bool fontBoldRight)> _linesWithColumns = new();
         private readonly List<(int lineNumber, IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft, bool fontBoldRight)> _multipleLinesWithColumns = new();
-        
+        private readonly ILogger _logger;
+
         private int _lineCount;
         private string _titleText;
         private HtmlHeaderEnum _htmlHeaderEnum;
         private IEmailSender _emailSender;
-        private ILogger _logger;
 
         private MailMaker(IMailConfigurator mailConfigurator)
         {
@@ -39,7 +38,7 @@ namespace Promat.EmailSender.MailTemplate
         }
 
         public static MailMaker New() => new(new MailConfigurator());
-        public static MailMaker New(IMailConfigurator configurator, IEmailSender emailSender, ILogger logger) => 
+        public static MailMaker New(IMailConfigurator configurator, IEmailSender emailSender, ILogger logger) =>
             new(configurator, emailSender, logger);
 
         public IMailConfigurator Configure()
@@ -48,33 +47,39 @@ namespace Promat.EmailSender.MailTemplate
         }
         public IMailMaker TitleHeader(string title, HtmlHeaderEnum headerEnum = HtmlHeaderEnum.H3)
         {
-            _logger.LogInformation($"TitleHeader variables: title -> {title} , headerEnum -> {headerEnum}");
+            _logger?.LogTrace("TitleHeader variables: title -> {title} , headerEnum -> {headerEnum}", title, headerEnum);
             _titleText = title;
             _htmlHeaderEnum = headerEnum;
             return this;
         }
         public IMailMaker AddLine(string lineText, bool isTitle = false, bool fontBold = false, HtmlTextAlignEnum htmlTextAlignEnum = HtmlTextAlignEnum.Left)
         {
-            _logger.LogInformation($"AddLine variables: lineText -> {lineText}, isTitle -> {isTitle}, fontBold -> {fontBold}, htmlTextAlignEnum -> {htmlTextAlignEnum}");
+            _logger?.LogTrace("AddLine variables: lineText -> {lineText}, isTitle -> {isTitle}, fontBold -> {fontBold}, htmlTextAlignEnum -> {htmlTextAlignEnum}", lineText, isTitle, fontBold, htmlTextAlignEnum);
             _lines.Add((_lineCount++, lineText, isTitle, fontBold, htmlTextAlignEnum));
             return this;
         }
         public IMailMaker AddLine(string leftLine, string rightLine, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
-            _logger.LogInformation($"AddLine variables: leftLine -> {leftLine}, rightLine -> {rightLine}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}");
+            _logger?.LogTrace("AddLine variables: leftLine -> {leftLine}, rightLine -> {rightLine}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}", leftLine, rightLine, fontBoldLeft, fontBoldRight);
             _linesWithColumns.Add((_lineCount++, leftLine, rightLine, fontBoldLeft, fontBoldRight));
             return this;
         }
         public IMailMaker AddLineWithImage(string urlImage, string rightLine, int maxWidth = 20, bool fontBoldRight = false)
         {
-            _logger.LogInformation($"AddLineWithImage variables: urlImage -> {urlImage}, rightLine -> {rightLine}, maxWidth -> {maxWidth}, fontBoldRight -> {fontBoldRight}");
+            _logger?.LogTrace("AddLineWithImage variables: urlImage -> {urlImage}, rightLine -> {rightLine}, maxWidth -> {maxWidth}, fontBoldRight -> {fontBoldRight}", urlImage, rightLine, maxWidth, fontBoldRight);
             _lineWithImagen.Add((_lineCount++, urlImage, rightLine, maxWidth, fontBoldRight));
             return this;
         }
         public IMailMaker AddLine(IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
-            _logger.LogInformation($"AddLine variables: leftLines -> {leftLines}, rightLines -> {rightLines}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}");
-            _multipleLinesWithColumns.Add((_lineCount++, leftLines, rightLines, fontBoldLeft, fontBoldRight));
+            var left = leftLines.ToList();
+            var right = rightLines.ToList();
+            _logger?.LogTrace("AddLine variables: leftLines -> {leftLines}, rightLines -> {rightLines}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}",
+                string.Join(", ", left),
+                string.Join(", ", right),
+                fontBoldLeft,
+                fontBoldRight);
+            _multipleLinesWithColumns.Add((_lineCount++, left, right, fontBoldLeft, fontBoldRight));
             return this;
 
         }
@@ -84,10 +89,10 @@ namespace Promat.EmailSender.MailTemplate
 
             template.Append(TemplateHtmlHead
                 .Replace(TagCol1Percentage, _mailConfigurator.PercentageColumn.ToString())
-                .Replace(TagCol2Percentage,  (100 -_mailConfigurator.PercentageColumn).ToString())
+                .Replace(TagCol2Percentage, (100 - _mailConfigurator.PercentageColumn).ToString())
                 .Replace(TagHeaderCol1Px, _mailConfigurator.HeaderImageWidth.ToString())
-                .Replace(TagHeaderCol2Px,  (_mailConfigurator.CorreoWidth -_mailConfigurator.HeaderImageWidth).ToString())
-                .Replace(TagCorreoWidth,  _mailConfigurator.CorreoWidth.ToString())
+                .Replace(TagHeaderCol2Px, (_mailConfigurator.CorreoWidth - _mailConfigurator.HeaderImageWidth).ToString())
+                .Replace(TagCorreoWidth, _mailConfigurator.CorreoWidth.ToString())
             );
             template.Append(TemplateHtmlConfigureHeadEmail
                 .Replace(TagImage, _mailConfigurator.PathPicture)
@@ -183,7 +188,6 @@ namespace Promat.EmailSender.MailTemplate
                 }
             }
             template.Append(TemplateHtmlEnd);
-            Console.WriteLine(_logger.ToString());
             return template.ToString();
         }
         public IMailMaker SetEmailSender(IEmailSender emailSender)
@@ -204,7 +208,7 @@ namespace Promat.EmailSender.MailTemplate
         public void Dispose()
         {
             _emailSender?.Dispose();
-            _logger.LogInformation("_emailSender?.Dispose()");
+            _logger?.LogTrace("Dispose()");
         }
     }
 }
