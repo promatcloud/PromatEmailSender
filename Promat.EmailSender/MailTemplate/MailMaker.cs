@@ -10,8 +10,6 @@ using Promat.EmailSender.MailTemplate.Interfaces;
 
 namespace Promat.EmailSender.MailTemplate
 {
-    // TODO: permitir configurar anchos de las columnas por porcentaje.
-    // TODO: permitir configurar los px de la imagen de título y ver como se comporta el texto.
     // TODO: loggear lo que se estime
     public partial class MailMaker : IMailMaker
     {
@@ -50,27 +48,32 @@ namespace Promat.EmailSender.MailTemplate
         }
         public IMailMaker TitleHeader(string title, HtmlHeaderEnum headerEnum = HtmlHeaderEnum.H3)
         {
+            _logger.LogInformation($"TitleHeader variables: title -> {title} , headerEnum -> {headerEnum}");
             _titleText = title;
             _htmlHeaderEnum = headerEnum;
             return this;
         }
         public IMailMaker AddLine(string lineText, bool isTitle = false, bool fontBold = false, HtmlTextAlignEnum htmlTextAlignEnum = HtmlTextAlignEnum.Left)
         {
+            _logger.LogInformation($"AddLine variables: lineText -> {lineText}, isTitle -> {isTitle}, fontBold -> {fontBold}, htmlTextAlignEnum -> {htmlTextAlignEnum}");
             _lines.Add((_lineCount++, lineText, isTitle, fontBold, htmlTextAlignEnum));
             return this;
         }
         public IMailMaker AddLine(string leftLine, string rightLine, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
+            _logger.LogInformation($"AddLine variables: leftLine -> {leftLine}, rightLine -> {rightLine}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}");
             _linesWithColumns.Add((_lineCount++, leftLine, rightLine, fontBoldLeft, fontBoldRight));
             return this;
         }
         public IMailMaker AddLineWithImage(string urlImage, string rightLine, int maxWidth = 20, bool fontBoldRight = false)
         {
+            _logger.LogInformation($"AddLineWithImage variables: urlImage -> {urlImage}, rightLine -> {rightLine}, maxWidth -> {maxWidth}, fontBoldRight -> {fontBoldRight}");
             _lineWithImagen.Add((_lineCount++, urlImage, rightLine, maxWidth, fontBoldRight));
             return this;
         }
         public IMailMaker AddLine(IEnumerable<string> leftLines, IEnumerable<string> rightLines, bool fontBoldLeft = false, bool fontBoldRight = false)
         {
+            _logger.LogInformation($"AddLine variables: leftLines -> {leftLines}, rightLines -> {rightLines}, fontBoldLeft -> {fontBoldLeft}, fontBoldRight -> {fontBoldRight}");
             _multipleLinesWithColumns.Add((_lineCount++, leftLines, rightLines, fontBoldLeft, fontBoldRight));
             return this;
 
@@ -79,11 +82,18 @@ namespace Promat.EmailSender.MailTemplate
         {
             var template = new StringBuilder();
 
-            template.Append(TemplateHtmlHead);
+            template.Append(TemplateHtmlHead
+                .Replace(TagCol1Percentage, _mailConfigurator.PercentageColumn.ToString())
+                .Replace(TagCol2Percentage,  (100 -_mailConfigurator.PercentageColumn).ToString())
+                .Replace(TagHeaderCol1Px, _mailConfigurator.HeaderImageWidth.ToString())
+                .Replace(TagHeaderCol2Px,  (_mailConfigurator.CorreoWidth -_mailConfigurator.HeaderImageWidth).ToString())
+                .Replace(TagCorreoWidth,  _mailConfigurator.CorreoWidth.ToString())
+            );
             template.Append(TemplateHtmlConfigureHeadEmail
                 .Replace(TagImage, _mailConfigurator.PathPicture)
                 .Replace(TagTitle, _titleText)
                 .Replace(TagHeaderSize, _htmlHeaderEnum.ToString())
+                .Replace(TagPaddingTopTitulo, (_mailConfigurator.HeaderImageHeight - 65).ToString())
             );
             template.Append(TemplateHtmlSeparatorLine);
 
@@ -105,10 +115,10 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagTextAlign, line.htmlTextAlignEnum.Print())
                             .Replace(TagColorLine,
                                 line.isTitle
-                                    ? _mailConfigurator.BackgroundColorTitulo
+                                    ? _mailConfigurator.BackgroundColorTitle
                                     : (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorLinePair
-                                        : _mailConfigurator.BackgroundColorLineOod))
+                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        : _mailConfigurator.BackgroundColorOodLine))
                         );
                     }
                 }
@@ -123,9 +133,9 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                     (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorLinePair
-                                        : _mailConfigurator.BackgroundColorLineOod)
-                                    : _mailConfigurator.BackgroundColorLineOod)
+                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        : _mailConfigurator.BackgroundColorOodLine)
+                                    : _mailConfigurator.BackgroundColorOodLine)
                             );
                     }
                 }
@@ -140,9 +150,9 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                 (numberLine % 2 == 0
-                                    ? _mailConfigurator.BackgroundColorLinePair
-                                    : _mailConfigurator.BackgroundColorLineOod)
-                                : _mailConfigurator.BackgroundColorLineOod)
+                                    ? _mailConfigurator.BackgroundColorEventLine
+                                    : _mailConfigurator.BackgroundColorOodLine)
+                                : _mailConfigurator.BackgroundColorOodLine)
                         );
                     }
                 }
@@ -165,14 +175,15 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                     (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorLinePair
-                                        : _mailConfigurator.BackgroundColorLineOod)
-                                    : _mailConfigurator.BackgroundColorLineOod
+                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        : _mailConfigurator.BackgroundColorOodLine)
+                                    : _mailConfigurator.BackgroundColorOodLine
                         ));
                     }
                 }
             }
             template.Append(TemplateHtmlEnd);
+            Console.WriteLine(_logger.ToString());
             return template.ToString();
         }
         public IMailMaker SetEmailSender(IEmailSender emailSender)
@@ -193,6 +204,7 @@ namespace Promat.EmailSender.MailTemplate
         public void Dispose()
         {
             _emailSender?.Dispose();
+            _logger.LogInformation("_emailSender?.Dispose()");
         }
     }
 }

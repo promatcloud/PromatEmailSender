@@ -24,62 +24,30 @@
   <title></title>
 
   <style type=""text/css"">
-    @media only screen and (min-width: 860px) {
-      .u-row {
-        width: 840px !important;
-      }
-
-      .u-row .u-col {
-        vertical-align: top;
-      }
-
-      .u-row .u-col-18p81 {
-        width: 158.004px !important;
-      }
-
-      .u-row .u-col-33p33 {
-        width: 279.972px !important;
-      }
-
-      .u-row .u-col-66p67 {
-        width: 560.028px !important;
-      }
-
-      .u-row .u-col-81p19 {
-        width: 681.9959999999999px !important;
-      }
-
-      .u-row .u-col-100 {
-        width: 840px !important;
-      }
-
+    .u-row {
+      width: [CORREOWIDTH]px !important;
     }
 
-    @media (max-width: 860px) {
-      .u-row-container {
-        max-width: 100% !important;
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-      }
-
-      .u-row .u-col {
-        min-width: 320px !important;
-        max-width: 100% !important;
-        display: block !important;
-      }
-
-      .u-row {
-        width: 100% !important;
-      }
-
-      .u-col {
-        width: 100% !important;
-      }
-
-      .u-col>div {
-        margin: 0 auto;
-      }
+    .u-row .u-col {
+      vertical-align: top;
+      width: 100%;
     }
+
+    .u-row .u-col.header-col1{
+      width: [HEADERCOL1PX]px;
+    }
+
+    .u-row .u-col.header-col2{
+      width: [HEADERCOL2PX]px;
+    }
+
+    .u-row .u-col.col1{
+      width: [COL1PERCENTAGE]%;
+    }
+
+    .u-row .u-col.col2{
+      width: [COL2PERCENTAGE]%;
+    }    
 
     body {
       margin: 0;
@@ -139,15 +107,13 @@
         private const string TemplateHtmlConfigureHeadEmail = @"	
 
   <div class=""u-row-container"" style=""padding: 0px;background-color: transparent"">
-            <div class=""u-row""
-              style=""min-width: 320px;max-width: 840px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
+            <div class=""u-row"" style=""overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
               <div
                 style=""border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;"">
                 <!--[if (mso)|(IE)]><table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""padding: 0px;background-color: transparent;"" align=""center""><table cellpadding=""0"" cellspacing=""0"" border=""0"" style=""width:840px;""><tr style=""background-color: transparent;""><![endif]-->
 
                 <!--[if (mso)|(IE)]><td align=""center"" width=""280"" style=""width: 280px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"" valign=""top""><![endif]-->
-                <div class=""u-col u-col-33p33""
-                  style=""max-width: 320px;min-width: 280px;display: table-cell;vertical-align: top;"">
+                <div class=""u-col header-col1"" style=""display: table-cell;vertical-align: top;"">
                   <div
                     style=""height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                     <!--[if (!mso)&(!IE)]><!-->
@@ -190,13 +156,12 @@
                 </div>
                 <!--[if (mso)|(IE)]></td><![endif]-->
                 <!--[if (mso)|(IE)]><td align=""center"" width=""560"" style=""width: 560px;padding: 220px 0px 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"" valign=""top""><![endif]-->
-                <div class=""u-col u-col-66p67""
-                  style=""max-width: 320px;min-width: 560px;display: table-cell;vertical-align: top;"">
+                <div class=""u-col header-col2"" style=""display: table-cell;vertical-align: top;"">
                   <div
                     style=""height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                     <!--[if (!mso)&(!IE)]><!-->
                     <div
-                      style=""box-sizing: border-box; height: 100%; padding: 190px 0px 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
+                      style=""box-sizing: border-box; height: 100%; padding: [PADDINGTOPTITULO]px 0px 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                       <!--<![endif]-->
 
                       <table style=""font-family:arial,helvetica,sans-serif;"" role=""presentation"" cellpadding=""0""
@@ -208,7 +173,7 @@
                               align=""left"">
 
                               <div style=""font-size: 17px; line-height: 130%; text-align: left; word-wrap: break-word;"">
-                                <[HeaderSize] style=""line-height: 130%;"">[Title]</[HeaderSize]>
+                                <[HeaderSize] style=""line-height: 130%; margin: 0"">[Title]</[HeaderSize]>
                               </div>
 
                             </td>
@@ -233,7 +198,7 @@
         private const string TemplateHtmlSeparatorLine = @"
           <div class=""u-row-container"" style=""padding: 0px;background-color: transparent"">
             <div class=""u-row""
-              style=""min-width: 320px;max-width: 840px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
+              style="" overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
               <div
                 style=""border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;"">
                 <!--[if (mso)|(IE)]><table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""padding: 0px;background-color: transparent;"" align=""center""><table cellpadding=""0"" cellspacing=""0"" border=""0"" style=""width:840px;""><tr style=""background-color: transparent;""><![endif]-->
@@ -289,14 +254,13 @@
         private const string TemplateHtmlAddLine = @"
          <div class=""u-row-container"" style=""padding: 0px;background-color: transparent"">
             <div class=""u-row""
-              style=""min-width: 320px;max-width: 840px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
+              style="" overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
               <div
                 style=""border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;"">
                 <!--[if (mso)|(IE)]><table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""padding: 0px;background-color: transparent;"" align=""center""><table cellpadding=""0"" cellspacing=""0"" border=""0"" style=""width:840px;""><tr style=""background-color: transparent;""><![endif]-->
 
                 <!--[if (mso)|(IE)]><td align=""center"" width=""840"" style=""background-color: #f8cba3;width: 840px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"" valign=""top""><![endif]-->
-                <div class=""u-col u-col-100""
-                  style=""max-width: 320px;min-width: 840px;display: table-cell;vertical-align: top;"">
+                <div class=""u-col"" style=""display: table-cell;vertical-align: top;"">
                   <div
                     style=""[Color]height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                     <!--[if (!mso)&(!IE)]><!-->
@@ -336,13 +300,13 @@
         private const string TemplateHtmlAddLineTwoColumns = @"
           <div class=""u-row-container"" style=""padding: 0px;background-color: transparent"">
             <div class=""u-row""
-              style=""min-width: 320px;max-width: 840px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
+              style="" overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;"">
               <div
                 style=""border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;"">
                 <!--[if (mso)|(IE)]><table width=""100%"" cellpadding=""0"" cellspacing=""0"" border=""0""><tr><td style=""padding: 0px;background-color: transparent;"" align=""center""><table cellpadding=""0"" cellspacing=""0"" border=""0"" style=""width:840px;""><tr style=""background-color: transparent;""><![endif]-->
                 <!--[if (mso)|(IE)]><td align=""center"" width=""158"" style=""width: 158px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"" valign=""top""><![endif]-->
-                <div class=""u-col u-col-18p81""
-                  style=""[Color]max-width: 320px;min-width: 158px;display: table-cell;vertical-align: top;"">
+                <div class=""u-col col1""
+                  style=""[Color]display: table-cell;vertical-align: top;"">
                   <div
                     style=""height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                     <!--[if (!mso)&(!IE)]><!-->
@@ -373,8 +337,8 @@
                 </div>
                 <!--[if (mso)|(IE)]></td><![endif]-->
                 <!--[if (mso)|(IE)]><td align=""center"" width=""681"" style=""width: 681px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"" valign=""top""><![endif]-->
-                <div class=""u-col u-col-81p19""
-                  style=""[Color]max-width: 320px;min-width: 682px;display: table-cell;vertical-align: top;"">
+                <div class=""u-col col2""
+                  style=""[Color]display: table-cell;vertical-align: top;"">
                   <div
                     style=""height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"">
                     <!--[if (!mso)&(!IE)]><!-->
@@ -436,6 +400,12 @@
         private const string TagRightColumn = "[RightColumn]";
         private const string TagHeaderSize = "[HeaderSize]";
         private const string TagTextAlign = "[TagTextAlign]";
+        private const string TagHeaderCol1Px = "[HEADERCOL1PX]";
+        private const string TagHeaderCol2Px = "[HEADERCOL2PX]";
+        private const string TagCol1Percentage = "[COL1PERCENTAGE]";
+        private const string TagCol2Percentage = "[COL2PERCENTAGE]";
+        private const string TagPaddingTopTitulo = "[PADDINGTOPTITULO]";
+        private const string TagCorreoWidth = "[CORREOWIDTH]";
         
         private string GetTagLine(bool isBoldText, string textLine)
         {

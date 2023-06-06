@@ -11,7 +11,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <summary>
         /// Nos devuelve una instancia de MailConfigurator para acceder a sus configuraciones
         /// </summary>
-        /// <returns>MailConfigurator</returns>
+        /// <returns>la instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator Configure();
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// </summary>
         /// <param name="title">Texto del titulo de la cabecera</param>
         /// <param name="headerEnum">Tamaño del titulo de la cabecera. Por defecto 'h3'</param>
-        /// <returns>MailMaker</returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker TitleHeader(string title, HtmlHeaderEnum headerEnum = HtmlHeaderEnum.H3);
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// False se comporta como el resto de las líneas. Por defecto false</param>
         /// <param name="fontBold">Si el texto esta en negrita. Por defecto false</param>
         /// <param name="htmlTextAlignEnum">Alineación del texto en la fila. Por defecto 'Left'  </param>
-        /// <returns>MailMaker</returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker AddLine(string lineText, bool isTitle = false, bool fontBold = false,
             HtmlTextAlignEnum htmlTextAlignEnum = HtmlTextAlignEnum.Left);
 
@@ -42,7 +42,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="rightLine">Texto columna de la derecha</param>
         /// <param name="fontBoldLeft">Texto columna izquierda en negrita. Por defecto false</param>
         /// <param name="fontBoldRight">Texto columna derecha en negrita. Por defecto false</param>
-        /// <returns>MailMaker</returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker AddLine(string leftLine, string rightLine,
             bool fontBoldLeft = false, bool fontBoldRight = false);
 
@@ -53,7 +53,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="rightLine">Texto columna derecha</param>
         /// <param name="maxWidth">Tamaño de la imagen, hay qeu pasarlo con el siguiente formato "32px". Por defecto "20px"</param>
         /// <param name="fontBoldRight">Texto columna derecha en negrita. Por defecto false</param>
-        /// <returns></returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker AddLineWithImage(string urlImage, string rightLine, int maxWidth = 20,
             bool fontBoldRight = false);
 
@@ -64,21 +64,21 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="rightLines">Texto columna de la derecha</param>
         /// <param name="fontBoldLeft">Texto columna izquierda en negrita. Por defecto es false</param>
         /// <param name="fontBoldRight">Texto columna derecha en negrita. Por defecto es false</param>
-        /// <returns>MailMaker</returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker AddLine(IEnumerable<string> leftLines, IEnumerable<string> rightLines,
             bool fontBoldLeft = false, bool fontBoldRight = false);
 
         /// <summary>
         /// Devuelve la plantilla completa con la información y configuración utilizada.
         /// </summary>
-        /// <returns>string</returns>
+        /// <returns><see cref="string"/> con toda la información de la plantilla</returns>
         string GetHtml();
 
         /// <summary>
         /// Permite establecer una instancia de <see cref="IEmailSender"/> para poder utilizar el método <see cref="SendMailAsync"/>
         /// </summary>
         /// <param name="emailSender">Instancia de <see cref="IEmailSender"/></param>
-        /// <returns></returns>
+        /// <returns>la propia instancia de <see cref="IMailMaker"/> para encadenar métodos</returns>
         IMailMaker SetEmailSender(IEmailSender emailSender);
 
         /// <summary>

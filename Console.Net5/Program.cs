@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -88,18 +89,23 @@ namespace Console.Net5
                 "Columna derecha fila 2",
                 "Columna derecha fila 3"
             };
-            
+
+            var color = Color.FromArgb(235, 199, 127);
             var mailMaker = host.Services.GetRequiredService<IMailMaker>()
+                    
                     .Configure()
-                    .BackgroundTitle("#F00")
-                    .BackgroundOddLine("#808080")
-                    .BackgroundEvenLine("rgb(255,255,0)")
+                    .BackgroundEvenLine("#CCC")
+                    .BackgroundOddLine(Color.Beige)
+                    .BackgroundTitle(color)
                     .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
-                    .IsToggleColor(false)
+                    .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png")
+                    .SetImageSize(150,150)
+                    .SetPercentageColumn(15)
+                    .SetCorreoWidth(500)
                     .EndConfiguration()
 
                     .TitleHeader("Titulo", HtmlHeaderEnum.H1)
-                    .AddLine("Texto de la línea", true, true, HtmlTextAlignEnum.Center)
+                    .AddLine("Texto de la línea", true, true, HtmlTextAlignEnum.Left)
 
                     .AddLineWithImage(
                         "https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/CirculoVerdeClaro_032.png",
