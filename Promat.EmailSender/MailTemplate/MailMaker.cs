@@ -117,7 +117,7 @@ namespace Promat.EmailSender.MailTemplate
                                 line.isTitle
                                     ? _mailConfigurator.BackgroundColorTitle
                                     : (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        ? _mailConfigurator.BackgroundColorEvenLine
                                         : _mailConfigurator.BackgroundColorOodLine))
                         );
                     }
@@ -133,7 +133,7 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                     (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        ? _mailConfigurator.BackgroundColorEvenLine
                                         : _mailConfigurator.BackgroundColorOodLine)
                                     : _mailConfigurator.BackgroundColorOodLine)
                             );
@@ -150,7 +150,7 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                 (numberLine % 2 == 0
-                                    ? _mailConfigurator.BackgroundColorEventLine
+                                    ? _mailConfigurator.BackgroundColorEvenLine
                                     : _mailConfigurator.BackgroundColorOodLine)
                                 : _mailConfigurator.BackgroundColorOodLine)
                         );
@@ -175,7 +175,7 @@ namespace Promat.EmailSender.MailTemplate
                             .Replace(TagColorLine,
                                 _mailConfigurator.IsToggleColorInLines ?
                                     (numberLine % 2 == 0
-                                        ? _mailConfigurator.BackgroundColorEventLine
+                                        ? _mailConfigurator.BackgroundColorEvenLine
                                         : _mailConfigurator.BackgroundColorOodLine)
                                     : _mailConfigurator.BackgroundColorOodLine
                         ));

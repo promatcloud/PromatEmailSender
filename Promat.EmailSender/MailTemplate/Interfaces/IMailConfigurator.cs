@@ -15,7 +15,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <summary>
         /// Color de la línea par de la plantilla html
         /// </summary>
-        string BackgroundColorEventLine { get; }
+        string BackgroundColorEvenLine { get; }
         /// <summary>
         /// Color de la línea titulo de la plantilla html
         /// </summary>
@@ -66,9 +66,9 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// Podemos establecerlo en diferentes formatos Ejemplo "#FF0", "#808080",  "rgb(255, 255, 0)" o <see cref="Color"/>
         /// </para>
         /// </summary>
-        /// <param name="cssColor"><see cref="Color"/></param>
+        /// <param name="color"><see cref="Color"/></param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
-        IMailConfigurator BackgroundTitle(Color cssColor);
+        IMailConfigurator BackgroundTitle(Color color);
 
         /// <summary>
         /// Configura el color de fondo de la linea impar, color principal en caso de que <see cref="IsToggleColor"/> sea false.
@@ -86,9 +86,9 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// Podemos establecerlo en diferentes formatos Ejemplo "#FF0", "#808080",  "rgb(255, 255, 0)" o <see cref="Color"/>
         /// </para>
         /// </summary>
-        /// <param name="cssColor"><see cref="Color"/></param>
+        /// <param name="color"><see cref="Color"/></param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
-        IMailConfigurator BackgroundOddLine(Color cssColor);
+        IMailConfigurator BackgroundOddLine(Color color);
 
         /// <summary>
         /// Configura el color de fondo de la línea par. Este color solo se verá si <see cref="IsToggleColor"/> es true
@@ -106,9 +106,9 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// Podemos establecerlo en diferentes formatos Ejemplo "#FF0", "#808080",  "rgb(255, 255, 0)" o <see cref="Color"/>
         /// </para>
         /// </summary>
-        /// <param name="cssColor"><see cref="Color"/></param>
+        /// <param name="color"><see cref="Color"/></param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
-        IMailConfigurator BackgroundEvenLine(Color cssColor);
+        IMailConfigurator BackgroundEvenLine(Color color);
 
         /// <summary>
         /// Configura la ruta de la imagen que queremos utilizar.
@@ -120,7 +120,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <summary>
         /// Indica si se utilizan colores de las líneas de forma alterna
         /// <para>
-        /// True utiliza los colores configurados en <see cref="BackgroundColorOodLine"/>  y <see cref="BackgroundColorEventLine"/><br/>
+        /// True utiliza los colores configurados en <see cref="BackgroundColorOodLine"/>  y <see cref="BackgroundColorEvenLine"/><br/>
         /// False utiliza el color configurado en "BackgroundColorOodLine"
         /// </para>
         /// </summary>
@@ -151,7 +151,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator SetCorreoWidth(int correoWidth);
         /// <summary>
-        /// Establece los tamaños de la imagen en la cabecera de la plantilla del correo en px
+        /// Establece el ancho de la imagen y utiliza el alto para alinear el título
         /// <para>
         /// Se admiten valores: 50 &lt;= valor &lt;= 1000<br/>
         /// Si es menor que 50 px se establecerá a 50 px<br/>
@@ -159,9 +159,20 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// </para>
         /// </summary>
         /// <param name="headerImageWidth">Ancho de la imagen en px</param>
-        /// <param name="headerImageHeight">Altura de la imagen en px</param>
+        /// <param name="headerImageHeight">Altura de la imagen en px (en proporción a la anchura)</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator SetImageSize(int headerImageWidth, int headerImageHeight);
+        /// <summary>
+        /// Establece los tamaños de la imagen en la cabecera de la plantilla del correo en px, usar si la imagen es cuadrada.
+        /// <para>
+        /// Se admiten valores: 50 &lt;= valor &lt;= 1000<br/>
+        /// Si es menor que 50 px se establecerá a 50 px<br/>
+        /// Si es mayor que 1000 px se establecerá a 1000 px
+        /// </para>
+        /// </summary>
+        /// <param name="size">Ancho y alto de la imagen en px</param>
+        /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
+        IMailConfigurator SetImageSize(int size);
         /// <summary>
         /// Finaliza la configuración del objeto MailConfigurator
         /// </summary>

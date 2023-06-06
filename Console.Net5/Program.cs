@@ -100,7 +100,7 @@ namespace Console.Net5
                     .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
                     .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png")
                     .SetImageSize(150,150)
-                    .SetPercentageColumn(15)
+                    .SetPercentageColumn(20)
                     .SetCorreoWidth(500)
                     .EndConfiguration()
 

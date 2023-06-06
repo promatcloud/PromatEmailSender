@@ -6,20 +6,20 @@ namespace Promat.EmailSender.MailTemplate
     public class MailConfigurator : IMailConfigurator
     {
         private IMailMaker _mailMaker;
-        private string _backgroundColorLineOod = "#ffffff";
-        private string _backgroundColorLinePair = "#E6E6E6";
+        private string _backgroundColorOodLine = "#ffffff";
+        private string _backgroundColorEvenLine = "#E6E6E6";
         private string _backgroundColorTitle = "#FCEEE2";
 
         public string PathPicture { get; private set; } = "https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png";
         public string BackgroundColorOodLine
         {
-            get => $"background-color: {_backgroundColorLineOod};";
-            private set => _backgroundColorLineOod = value;
+            get => $"background-color: {_backgroundColorOodLine};";
+            private set => _backgroundColorOodLine = value;
         }
-        public string BackgroundColorEventLine
+        public string BackgroundColorEvenLine
         {
-            get => $"background-color: {_backgroundColorLinePair};";
-            private set => _backgroundColorLinePair = value;
+            get => $"background-color: {_backgroundColorEvenLine};";
+            private set => _backgroundColorEvenLine = value;
         }
         public string BackgroundColorTitle
         {
@@ -42,9 +42,9 @@ namespace Promat.EmailSender.MailTemplate
             BackgroundColorTitle = cssColor;
             return this;
         }
-        public IMailConfigurator BackgroundTitle(Color cssColor)
+        public IMailConfigurator BackgroundTitle(Color color)
         {
-            BackgroundColorTitle = ToHex(cssColor);
+            BackgroundColorTitle = ToHex(color);
             return this;
         }
         public IMailConfigurator BackgroundOddLine(string cssColor)
@@ -52,19 +52,19 @@ namespace Promat.EmailSender.MailTemplate
             BackgroundColorOodLine = cssColor;
             return this;
         }
-        public IMailConfigurator BackgroundOddLine(Color cssColor)
+        public IMailConfigurator BackgroundOddLine(Color color)
         {
-            BackgroundColorOodLine = ToHex(cssColor);
+            BackgroundColorOodLine = ToHex(color);
             return this;
         }
         public IMailConfigurator BackgroundEvenLine(string cssColor)
         {
-            BackgroundColorEventLine = cssColor;
+            BackgroundColorEvenLine = cssColor;
             return this;
         }
-        public IMailConfigurator BackgroundEvenLine(Color cssColor)
+        public IMailConfigurator BackgroundEvenLine(Color color)
         {
-            BackgroundColorEventLine = ToHex(cssColor);
+            BackgroundColorEvenLine = ToHex(color);
             return this;
         }
         public IMailConfigurator SetPathPicture(string pathPicture)
@@ -113,6 +113,7 @@ namespace Promat.EmailSender.MailTemplate
             };
             return this;
         }
+        public IMailConfigurator SetImageSize(int size) => SetImageSize(size, size);
         public IMailMaker EndConfiguration() => _mailMaker;
 
         private string ToHex(Color color)

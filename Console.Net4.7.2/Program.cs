@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 using Promat.EmailSender;
 using Promat.EmailSender.MailTemplate;
@@ -55,7 +56,6 @@ namespace Console.Net4._7._2
         }
         private static async Task EmailTemplateTest()
         {
-
             var left = new[]
             {
                 "Columna izquierda fila 1", 
@@ -69,35 +69,36 @@ namespace Console.Net4._7._2
                 "Columna derecha fila 3"
             };
 
+            var color = Color.FromArgb(235, 199, 127);
             var mailMaker = MailMaker.New()
-
-                    //.ConfigureMail()
-                    //.BackgroundTitle("#F00")
-                    //.BackgroundOddLine("#808080")
-                    //.BackgroundEvenLine("rgb(255,255,0)")
-                    //.SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
-                    //.IsToggleColor(false)
-                    //.EndMailConfigurator()
+                    .Configure()
+                    .BackgroundEvenLine("#CCC")
+                    .BackgroundOddLine(Color.Beige)
+                    .BackgroundTitle(color)
+                    .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
+                    .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png")
+                    .SetImageSize(150, 150)
+                    .SetPercentageColumn(20)
+                    .SetCorreoWidth(500)
+                    .EndConfiguration()
 
                     .TitleHeader("Titulo", HtmlHeaderEnum.H1)
-                    .AddLine("Texto de línea", true, true, HtmlTextAlignEnum.Center)
+                    .AddLine("Texto de la línea", true, true, HtmlTextAlignEnum.Left)
 
                     .AddLineWithImage(
                         "https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/CirculoVerdeClaro_032.png",
-                        "Texto imagen",30)
+                        "Texto imagen")
                     .AddLineWithImage(
                         "https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png",
                         "Texto imagen")
 
-                    .AddLine("Probar letra negrita", "texto", false, true)
+                    .AddLine("Probar letra en negrita", "texto", false, true)
                     .AddLine(left, right)
-                    .AddLine(left, right, true)
-                ;
+                    .AddLine(left, right, true);
             var htmlMailMaker = mailMaker.GetHtml();
             System.Console.WriteLine(htmlMailMaker);
             await Task.CompletedTask;
             //await mailMaker.SendMailAsync("correo@correo.com", "Prueba de correo", new []{"copia@correo.com", "copia@correo.com"});
-
         }
     }
 }
