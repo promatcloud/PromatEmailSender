@@ -98,7 +98,11 @@ namespace Promat.EmailSender.Extensions
             });
             return services;
         }
-        //TODO comentar
+        /// <summary>
+        /// Añade los servicios necesarios para poder utilizar la plantilla resolviendo el servicio <see cref="IMailMaker"/>
+        /// </summary>
+        /// <param name="services">Colección de servicios</param>
+        /// <returns><see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddMailMaker(this IServiceCollection services)
         {
             services.AddTransient<IMailConfigurator, MailConfigurator>();

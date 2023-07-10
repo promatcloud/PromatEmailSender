@@ -79,11 +79,11 @@ namespace Console.Net5
         {
             var left = new[]
             {
-                "Columna izquierda fila 1", 
-                "Columna izquierda fila 2", 
+                "Columna izquierda fila 1",
+                "Columna izquierda fila 2",
                 "Columna izquierda fila 3"
             };
-            var right = new[] 
+            var right = new[]
             {
                 "Columna derecha fila 1",
                 "Columna derecha fila 2",
@@ -92,20 +92,18 @@ namespace Console.Net5
 
             var color = Color.FromArgb(235, 199, 127);
             var mailMaker = host.Services.GetRequiredService<IMailMaker>()
-                    
+
                     .Configure()
                     .BackgroundEvenLine("#CCC")
                     .BackgroundOddLine(Color.Beige)
                     .BackgroundTitle(color)
                     .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
                     .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png")
-                    .SetImageSize(150,150)
-                    .SetPercentageColumn(20)
+                    .SetImageSize(150, 150)
                     .SetCorreoWidth(500)
                     .EndConfiguration()
 
-                    .TitleHeader("Titulo", HtmlHeaderEnum.H1)
-                    .AddLine("Texto de la línea", true, true, HtmlTextAlignEnum.Left)
+                    .TitleHeader("Titulo",  HtmlHeaderEnum.H1)
 
                     .AddLineWithImage(
                         "https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/CirculoVerdeClaro_032.png",
@@ -116,7 +114,6 @@ namespace Console.Net5
 
                     .AddLine("Probar letra en negrita", "texto", false, true)
                     .AddLine(left, right)
-                    .AddLine(left, right, true)
                 ;
             var htmlMailMaker = mailMaker.GetHtml();
             System.Console.WriteLine(htmlMailMaker);

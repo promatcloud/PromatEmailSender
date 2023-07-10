@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Promat.EmailSender.MailTemplate.Enums;
 using Promat.EmailSender.MailTemplate.Interfaces;
 
 namespace Promat.EmailSender.MailTemplate
@@ -13,24 +14,40 @@ namespace Promat.EmailSender.MailTemplate
         public string PathPicture { get; private set; } = "https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png";
         public string BackgroundColorOodLine
         {
-            get => $"background-color: {_backgroundColorOodLine};";
+            get => _backgroundColorOodLine;
             private set => _backgroundColorOodLine = value;
         }
         public string BackgroundColorEvenLine
         {
-            get => $"background-color: {_backgroundColorEvenLine};";
+            get => _backgroundColorEvenLine;
             private set => _backgroundColorEvenLine = value;
         }
         public string BackgroundColorTitle
         {
-            get => $"background-color: {_backgroundColorTitle};";
+            get => _backgroundColorTitle;
             private set => _backgroundColorTitle = value;
         }
         public bool IsToggleColorInLines { get; private set; } = true;
         public int PercentageColumn { get; private set; } = 20;
+        public int PercentageLeftColumn { get; private set; } = 20;
+        public int PercentageCenterColumn { get; private set; } = 40;
         public int HeaderImageWidth { get; private set; } = 280;
         public int HeaderImageHeight { get; private set; } = 280;
         public int CorreoWidth { get; private set; } = 840;
+        public string LinkColorStyle { get; private set; } = "#000000";
+        public string VisitedColorStyle { get; private set; } = "#000000";
+        public string HoverColorStyle { get; private set; } = "#000000";
+        public string ActiveColorStyle { get; private set; } = "#000000";
+        public HtmlDecorationLineEnum LinkTextDecorationLine { get; private set; } = HtmlDecorationLineEnum.None;
+        public HtmlDecorationLineEnum VisitedTextDecorationLine { get; private set; } = HtmlDecorationLineEnum.None;
+        public HtmlDecorationLineEnum HoverTextDecorationLine { get; private set; } = HtmlDecorationLineEnum.None;
+        public HtmlDecorationLineEnum ActiveTextDecorationLine { get; private set; } = HtmlDecorationLineEnum.None;
+        public HtmlDecorationStyleEnum LinkTextDecorationStyle { get; private set; } = HtmlDecorationStyleEnum.None;
+        public HtmlDecorationStyleEnum VisitedTextDecorationStyle { get; private set; } = HtmlDecorationStyleEnum.None;
+        public HtmlDecorationStyleEnum HoverTextDecorationStyle { get; private set; } = HtmlDecorationStyleEnum.None;
+        public HtmlDecorationStyleEnum ActiveTextDecorationStyle { get; private set; } = HtmlDecorationStyleEnum.None;
+        public string FontFamily { get; private set; } = ConcatFontFamily(HtmlFontFamilyEnum.Arial, HtmlFontFamilyEnum.Helvetica, HtmlGenericFamilyEnum.SansSerif);
+        public int FontSize { get; private set; } = 14;
 
         public IMailConfigurator SetMailMaker(IMailMaker mailMaker)
         {
@@ -77,7 +94,7 @@ namespace Promat.EmailSender.MailTemplate
             IsToggleColorInLines = isDifferent;
             return this;
         }
-        public IMailConfigurator SetPercentageColumn(int percentageColumn)
+        public IMailConfigurator SetPercentageTwoColumn(int percentageColumn)
         {
             PercentageColumn = percentageColumn switch
             {
@@ -85,6 +102,28 @@ namespace Promat.EmailSender.MailTemplate
                 > 75 => 75,
                 _ => percentageColumn
             };
+            return this;
+        }
+        public IMailConfigurator SetPercentageThreeColumn(int percentageLeftColumn, int percentageRightColumn)
+        {
+            PercentageLeftColumn = percentageLeftColumn switch
+            {
+                < 20 => 20,
+                > 60 => 60,
+                _ => percentageLeftColumn
+            };
+            PercentageCenterColumn = percentageRightColumn switch
+            {
+                < 20 => 20,
+                > 60 => 60,
+                _ => percentageRightColumn
+            };
+            if (PercentageCenterColumn + PercentageLeftColumn > 80)
+            {
+                PercentageLeftColumn = 20;
+                PercentageCenterColumn = 40;
+
+            }
             return this;
         }
         public IMailConfigurator SetCorreoWidth(int correoWidth)
@@ -114,6 +153,45 @@ namespace Promat.EmailSender.MailTemplate
             return this;
         }
         public IMailConfigurator SetImageSize(int size) => SetImageSize(size, size);
+
+        public IMailConfigurator SetLinksColorsAndTextDecoration(
+            Color linkColorStyle, Color visitedColorStyle,
+            Color hoverColorStyle, Color activeColorStyle,
+            HtmlDecorationLineEnum linkTextDecorationLine = HtmlDecorationLineEnum.None,
+            HtmlDecorationLineEnum visitedTextDecorationLine = HtmlDecorationLineEnum.None,
+            HtmlDecorationLineEnum hoverTextDecorationLine = HtmlDecorationLineEnum.None,
+            HtmlDecorationLineEnum activeTextDecorationLine = HtmlDecorationLineEnum.None,
+            HtmlDecorationStyleEnum linkTextDecorationStyle = HtmlDecorationStyleEnum.None,
+            HtmlDecorationStyleEnum visitedTextDecorationStyle = HtmlDecorationStyleEnum.None,
+            HtmlDecorationStyleEnum hoverTextDecorationStyle = HtmlDecorationStyleEnum.None,
+            HtmlDecorationStyleEnum activeTextDecorationStyle = HtmlDecorationStyleEnum.None)
+        {
+            LinkColorStyle = ToHex(linkColorStyle);
+            VisitedColorStyle = ToHex(visitedColorStyle);
+            HoverColorStyle = ToHex(hoverColorStyle);
+            ActiveColorStyle = ToHex(activeColorStyle);
+            LinkTextDecorationLine = linkTextDecorationLine;
+            VisitedTextDecorationLine = visitedTextDecorationLine;
+            HoverTextDecorationLine = hoverTextDecorationLine;
+            ActiveTextDecorationLine = activeTextDecorationLine;
+            LinkTextDecorationStyle = linkTextDecorationStyle;
+            VisitedTextDecorationStyle = visitedTextDecorationStyle;
+            HoverTextDecorationStyle = hoverTextDecorationStyle;
+            ActiveTextDecorationStyle = activeTextDecorationStyle;
+
+            return this;
+        }
+        public IMailConfigurator SetFontGenericFamilyAndFontSize(
+            HtmlFontFamilyEnum fontFamilyOne = HtmlFontFamilyEnum.Arial,
+            HtmlFontFamilyEnum fontFamilyTwo = HtmlFontFamilyEnum.Helvetica,
+            HtmlGenericFamilyEnum genericFamily = HtmlGenericFamilyEnum.SansSerif, int fontSize = 14)
+        {
+            FontFamily = ConcatFontFamily(fontFamilyOne, fontFamilyTwo, genericFamily);
+            FontSize = fontSize;
+
+            return this;
+        }
+
         public IMailMaker EndConfiguration() => _mailMaker;
 
         private string ToHex(Color color)
@@ -135,6 +213,10 @@ namespace Promat.EmailSender.MailTemplate
             return hasAlpha
                 ? $"RGBA({color.R}, {color.G}, {color.B}, {alphaValue}"
                 : $"RGB({color.R}, {color.G}{color.B})";
+        }
+        private static string ConcatFontFamily(HtmlFontFamilyEnum fontFamilyOne, HtmlFontFamilyEnum fontFamilyTwo, HtmlGenericFamilyEnum genericFamily)
+        {
+            return $"{fontFamilyOne.Print()},{fontFamilyTwo.Print()},{genericFamily.Print()}";
         }
     }
 }

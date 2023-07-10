@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Promat.EmailSender.MailTemplate.Enums;
 
 namespace Promat.EmailSender.MailTemplate.Interfaces
 {
@@ -31,6 +32,14 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// </summary>
         int PercentageColumn { get; }
         /// <summary>
+        /// Porcentaje que ocupa la columna de la izquierda cuando hay tres columnas
+        /// </summary>
+        int PercentageLeftColumn { get; }
+        /// <summary>
+        /// Porcentaje que ocupa la columna de la derecha cuando hay tres columnas
+        /// </summary>
+        int PercentageCenterColumn { get; }
+        /// <summary>
         /// Ancho de la imagen de cabecera, en px
         /// </summary>
         int HeaderImageWidth { get; }
@@ -42,6 +51,62 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// Ancho total del correo, en px
         /// </summary>
         int CorreoWidth { get; }
+        /// <summary>
+        /// Color del Link
+        /// </summary>
+        string LinkColorStyle { get; } 
+        /// <summary>
+        /// Color del Link una vez visitado
+        /// </summary>
+        string VisitedColorStyle { get; } 
+        /// <summary>
+        /// Color del Link cuando pasas el ratón por encima
+        /// </summary>
+        string HoverColorStyle { get; } 
+        /// <summary>
+        /// Color del Link cuando se mantiene el Link pulsado
+        /// </summary>
+        string ActiveColorStyle { get; } 
+        /// <summary>
+        /// Decoración de la linea del Link
+        /// </summary>
+        HtmlDecorationLineEnum LinkTextDecorationLine { get; }
+        /// <summary>
+        /// Decoración de la linea del Link una vez visitado
+        /// </summary>
+        HtmlDecorationLineEnum VisitedTextDecorationLine { get; }
+        /// <summary>
+        /// Decoración de la linea del Link cuando pasas el ratón por encima
+        /// </summary>
+        HtmlDecorationLineEnum HoverTextDecorationLine { get; }
+        /// <summary>
+        /// Decoración de la linea del Link cuando se mantiene el Link pulsado
+        /// </summary>
+        HtmlDecorationLineEnum ActiveTextDecorationLine { get; }
+        /// <summary>
+        /// Estilo de la linea del Link
+        /// </summary>
+        HtmlDecorationStyleEnum LinkTextDecorationStyle { get; }
+        /// <summary>
+        /// Estilo de la linea del Link una vez visitado
+        /// </summary>
+        HtmlDecorationStyleEnum VisitedTextDecorationStyle { get; }
+        /// <summary>
+        /// Estilo de la linea del Link cuando pasas el ratón por encima
+        /// </summary>
+        HtmlDecorationStyleEnum HoverTextDecorationStyle { get; }
+        /// <summary>
+        /// Estilo de la linea del Link cuando se mantiene el Link pulsado
+        /// </summary>
+        HtmlDecorationStyleEnum ActiveTextDecorationStyle { get; }
+        /// <summary>
+        /// Tipo de fuente
+        /// </summary>
+        string FontFamily { get;  }
+        /// <summary>
+        /// Tamaño de fuente
+        /// </summary>
+        int FontSize { get;  }
 
         /// <summary>
         /// Establece sobre que 'MailMaker' vamos a hacer la configuracion 'MailConfiguration'
@@ -59,7 +124,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="cssColor">string del color en formato "#FF0", "#808080",  "rgb(255, 255, 0)"</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator BackgroundTitle(string cssColor);
-        
+
         /// <summary>
         /// Establece el color de fondo de la linea de title.
         /// <para>
@@ -79,7 +144,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="cssColor">string del color en formato "#FF0", "#808080",  "rgb(255, 255, 0)"</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator BackgroundOddLine(string cssColor);
-        
+
         /// <summary>
         /// Configura el color de fondo de la linea impar, color principal en caso de que <see cref="IsToggleColor"/> sea false.
         /// <para>
@@ -99,7 +164,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="cssColor">string del color en formato "#FF0", "#808080",  "rgb(255, 255, 0)"</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator BackgroundEvenLine(string cssColor);
-        
+
         /// <summary>
         /// Configura el color de fondo de la línea par. Este color solo se verá si <see cref="IsToggleColor"/> es true
         /// <para>
@@ -129,7 +194,7 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         IMailConfigurator IsToggleColor(bool isDifferent);
 
         /// <summary>
-        /// Establece el porcentaje que ocupa la columna de la izquierda, cuando la fila tiene dos columnas.
+        /// Establece el porcentaje que ocupa la columna de la izquierda, cuando la fila tiene dos columnas. La columna de la derecha ocupará el espacio restante
         /// <para>
         /// Se admiten valores: 20 &lt;= valor &lt;= 75<br/>
         /// Si es menor que 20 se establecerá a 20<br/>
@@ -138,7 +203,20 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// </summary>
         /// <param name="percentageColumn">Porcentaje columna</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
-        IMailConfigurator SetPercentageColumn(int percentageColumn);
+        IMailConfigurator SetPercentageTwoColumn(int percentageColumn);
+        /// <summary>
+        /// Establece el porcentaje que ocupa la columna de la izquierda y la del centro, cuando la fila tiene tres columnas. La columna de la derecha ocupará el espacio restante
+        /// <para>
+        /// Se admiten valores: 20 &lt;= valor &lt;= 60<br/>
+        /// Si es menor que 20 se establecerá a 20<br/>
+        /// Si es mayor que 60 se establecerá a 60<br/>
+        /// Si la suma de <see cref="percentageLeftColumn"/> y <see cref="percentageRightColumn"/> &gt; 80. Se establece la columna izquierda a 20 y la del centro a 40.
+        /// </para>
+        /// </summary>
+        /// <param name="percentageLeftColumn">Porcentaje columna izquierda por defecto a 20</param>
+        /// <param name="percentageRightColumn">Porcentaje columna derecha por defecto a 40</param>
+        /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
+        IMailConfigurator SetPercentageThreeColumn(int percentageLeftColumn, int percentageRightColumn);
         /// <summary>
         /// Establece el tamaño de ancho de la plantilla del correo
         /// <para>
@@ -173,6 +251,48 @@ namespace Promat.EmailSender.MailTemplate.Interfaces
         /// <param name="size">Ancho y alto de la imagen en px</param>
         /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
         IMailConfigurator SetImageSize(int size);
+        /// <summary>
+        /// Establece los estilos y la decoración de los link 
+        /// </summary>
+        /// <param name="linkColorStyle">Color del link</param>
+        /// <param name="visitedColorStyle">Color del link una vez visitado</param>
+        /// <param name="hoverColorStyle">Color del link al pasar el ratón por encima</param>
+        /// <param name="activeColorStyle">Color del link mientras esta pulsado</param>
+        /// <param name="linkTextDecorationLine">Decoración de la línea del link</param>
+        /// <param name="visitedTextDecorationLine">Decoración de la línea del link una vez visitado</param>
+        /// <param name="hoverTextDecorationLine">Decoración de la línea del link al pasar el ratón por encima</param>
+        /// <param name="activeTextDecorationLine">Decoración de la línea del link mientras esta pulsado</param>
+        /// <param name="linkTextDecorationStyle">Estilo de la línea del link</param>
+        /// <param name="visitedTextDecorationStyle">Estilo de la línea del link una vez visitado</param>
+        /// <param name="hoverTextDecorationStyle">Estilo de la línea del link al pasar el ratón por encima</param>
+        /// <param name="activeTextDecorationStyle">Estilo de la línea del link mientras esta pulsado</param>
+        /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
+        IMailConfigurator SetLinksColorsAndTextDecoration(
+            Color linkColorStyle , Color visitedColorStyle, Color hoverColorStyle, Color activeColorStyle,
+            HtmlDecorationLineEnum linkTextDecorationLine = HtmlDecorationLineEnum.None, 
+            HtmlDecorationLineEnum visitedTextDecorationLine = HtmlDecorationLineEnum.None, 
+            HtmlDecorationLineEnum hoverTextDecorationLine = HtmlDecorationLineEnum.None, 
+            HtmlDecorationLineEnum activeTextDecorationLine = HtmlDecorationLineEnum.None,
+            HtmlDecorationStyleEnum linkTextDecorationStyle = HtmlDecorationStyleEnum.None, 
+            HtmlDecorationStyleEnum visitedTextDecorationStyle = HtmlDecorationStyleEnum.None, 
+            HtmlDecorationStyleEnum hoverTextDecorationStyle = HtmlDecorationStyleEnum.None, 
+            HtmlDecorationStyleEnum activeTextDecorationStyle = HtmlDecorationStyleEnum.None
+            );
+        /// <summary>
+        /// Estable el tipo y tamaño de la fuente
+        /// </summary>
+        /// <param name="fontFamilyOne">Primera opción de fuente<br/>
+        /// Defecto <see cref="HtmlFontFamilyEnum.Arial"/></param>
+        /// <param name="fontFamilyTwo">Segunda opción de fuente por si falla la primera<br/>
+        /// Defecto <see cref="HtmlFontFamilyEnum.Helvetica"/></param>
+        /// <param name="genericFamily">Familia genérica por si no estuvieran disponibles las fuentes<br/>
+        /// Defecto <see cref="HtmlGenericFamilyEnum.SansSerif"/></param>
+        /// <param name="fontSize">Tamaño para la fuente en px<br/>
+        /// Defecto 14</param>
+        /// <returns>la propia instancia de <see cref="IMailConfigurator"/> para encadenar métodos</returns>
+        IMailConfigurator SetFontGenericFamilyAndFontSize(
+            HtmlFontFamilyEnum fontFamilyOne = HtmlFontFamilyEnum.Arial, HtmlFontFamilyEnum fontFamilyTwo = HtmlFontFamilyEnum.Helvetica, 
+            HtmlGenericFamilyEnum genericFamily = HtmlGenericFamilyEnum.SansSerif, int fontSize = 14);
         /// <summary>
         /// Finaliza la configuración del objeto MailConfigurator
         /// </summary>
