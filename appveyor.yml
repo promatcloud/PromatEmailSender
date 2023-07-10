@@ -1,9 +1,9 @@
-version: 1.0.4.{build}
+version: 1.0.5.{build}
 
 image: Visual Studio 2019
 
 environment:
-  packageVersion: 1.0.4
+  packageVersion: 1.0.5
 
 init:
 - ps: echo "$env:packageVersion"
