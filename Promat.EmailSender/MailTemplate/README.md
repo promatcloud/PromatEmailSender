@@ -52,6 +52,7 @@ Los campos de configuración obligatorios según si queremos usar SendGrid o SMT
 		- Port
 		- User
 		- Password
+    
 Para utilizar el envío por **MailMaker** en nuestra app debemos agregar los servicios en la clase **startup.cs**
 ```csharp
 public class Startup
