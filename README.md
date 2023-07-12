@@ -13,6 +13,7 @@
 Simple library in net standard to send emails via SMTP or SendGrid service
 
 PromatEmailSender está diponible por **NuGet [PromatEmailSender](https://www.nuget.org/packages/PromatEmailSender/)**
+Plantilla simple para gestionar la información en un envio por mail **[MailTemplate](https://github.com/promatcloud/PromatEmailSender/blob/master/Promat.EmailSender/MailTemplate/).**
 
 # Generalidades
 La librería está implementada en netstandard 2, por lo que puede ser usada en todo tipo de proyectos:
