@@ -13,7 +13,45 @@ La Plantilla está implementad en nerstandard 2, por lo que puede ser usada en t
 
 # Net Core
 Configuración:
-
+```json
+{
+  "PromatEmailSender": {
+    "DefaultFromEmail": "Optional: MyApplicationEmail@MyDomain.com",
+    "DefaultFromName": "Optional: My application name",
+    "Proxy": "Optional:https://myproxy:port",
+    "SendGrid": {
+      "ApiKey": "MySendGridApiKey"
+    },
+    "Smtp": {
+      "Host": "smtp.myEmailServer.com",
+      "Port": 587,
+      "TlsEnabled": true,
+      "User": "user@myEmailServer.com",
+      "Password": "******************",
+      "IgnoreRemoteCertificateChainErrors": false,
+      "IgnoreRemoteCertificateNameMismatch": false,
+      "IgnoreRemoteCertificateNotAvailable": false,
+      "SecurityProtocol": {
+        "Ssl3": false,
+        "Tls": false,
+        "Tls11": true,
+        "Tls12": true
+      }
+    }
+  }
+}
+```
+Según el uso, sólo tendremos que definir el bloque "SendGrid" o el bloque "Smtp".
+Los campos de configuración obligatorios según si queremos usar SendGrid o SMTP son:
+- SendGrid: 
+	- PromatEmailSender -> SendGrid
+		- ApiKey
+- Stmp: 
+	- PromatEmailSender -> Smtp -> 
+		- Host
+		- Port
+		- User
+		- Password
 Para utilizar el envío por **MailMaker** en nuestra app debemos agregar los servicios en la clase **startup.cs**
 ```csharp
 public class Startup
