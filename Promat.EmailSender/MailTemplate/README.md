@@ -70,7 +70,33 @@ class Program
 
     private static async Task EmailTemplateTest()
     {      
-        var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null)
+        var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null); 
     }
+}
+```
+# Uso de MailConfigurator
+Tenemos diferentes métodos para hacer configuraciones generales desde el objeto MailConfigurator, estas configuraciones son usadas a la hora de solicitar la plantilla al objeto MailMaker. Inicializado el objeto MailMaker tenemos que llamar al método Configure() para empezar las configuraciones generales. Una vez configurado todo lo deseado invocaremos al método EndConfiguration() para salir de las configuraciones. Todo ello se realiza por medio de métodos encadenados.
+Ejemplo:
+
+```csharp
+
+private static async Task EmailTemplateTest()
+{      
+	var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null)
+
+	mailMaker.Configure()
+                    .BackgroundEvenLine("#CCC")
+                    .BackgroundOddLine(Color.Beige)
+                    .BackgroundTitle(Color.Yellow)
+                    .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/icons/org/promat.512.png")
+                    .SetPathPicture("https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/AnimalFeeding_512.png")
+                    .IsToggleColor(true)
+                    .SetPercentageTwoColumn(30)
+                    .SetPercentageThreeColumn(30,35)
+                    .SetCorreoWidth(500)
+                    .SetImageSize(150, 150)
+                    .SetLinksColorsAndTextDecoration(Color.Black,Color.Blue, Color.BlueViolet,Color.Aqua)
+                    .SetFontGenericFamilyAndFontSize(HtmlFontFamilyEnum.Arial,HtmlFontFamilyEnum.Geneva,HtmlGenericFamilyEnum.SansSerif,20)
+                    .EndConfiguration()
 }
 ```
