@@ -18,6 +18,10 @@
     <Product>Promat.EmailSender.Smtp</Product>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\Any CPU\Release\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
