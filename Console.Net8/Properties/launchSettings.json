@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Console.Net8": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "environmentVariables": {
+        "NETCOREAPP_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

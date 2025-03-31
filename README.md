@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="https://github.com/promatcloud/Branding/blob/master/icons/PromatEmailSender/promatemailsenderarroba.512.png" alt="promat" width="256"/>
+<img src="https://github.com/promatcloud/Branding/blob/master/icons/PromatEmailSender/promatemailsenderarroba.512.png?raw=true" alt="promat" width="256"/>
  <br/>
  PromatEmailSender
 </h1>
@@ -7,14 +7,16 @@
 <div align="center">
 
 [![Build status](https://ci.appveyor.com/api/projects/status/e6m2m84bn51mq7t8?svg=true)](https://ci.appveyor.com/project/promatcloud/promatemailsender)
-[![NuGet Badge](https://buildstats.info/nuget/PromatEmailSender?includePreReleases=true)](https://www.nuget.org/packages/PromatEmailSender/)
+ 
+[![NuGet version](https://badge.fury.io/nu/PromatEmailSender.svg)](https://badge.fury.io/nu/PromatEmailSender) **Promat.EmailSender.Smtp**
 
 </div>
-Simple library in net standard to send emails via SMTP or SendGrid service
+Simple library in net standard to send emails via SMTP
 
-PromatEmailSender está diponible por **NuGet [PromatEmailSender](https://www.nuget.org/packages/PromatEmailSender/)**
+Está diponible por **NuGet [Promat.EmailSender.Smtp](https://www.nuget.org/packages/PromatEmailSender/)**
 
-Plantilla simple para gestionar la información en un envio por mail **[MailTemplate](https://github.com/promatcloud/PromatEmailSender/blob/master/Promat.EmailSender/MailTemplate/).**
+Plantilla simple para gestionar la información en un envio por mail 
+**[MailTemplate](https://github.com/promatcloud/PromatEmailSender/blob/master/Promat.EmailSender/MailTemplate/).**
 
 # Generalidades
 La librería está implementada en netstandard 2, por lo que puede ser usada en todo tipo de proyectos:
@@ -25,43 +27,39 @@ La librería está implementada en netstandard 2, por lo que puede ser usada en 
 Configuración:
 ```json
 {
-  "PromatEmailSender": {
-    "DefaultFromEmail": "Optional: MyApplicationEmail@MyDomain.com",
-    "DefaultFromName": "Optional: My application name",
-    "Proxy": "Optional:https://myproxy:port",
-    "SendGrid": {
-      "ApiKey": "MySendGridApiKey"
-    },
-    "Smtp": {
-      "Host": "smtp.myEmailServer.com",
-      "Port": 587,
-      "TlsEnabled": true,
-      "User": "user@myEmailServer.com",
-      "Password": "******************",
-      "IgnoreRemoteCertificateChainErrors": false,
-      "IgnoreRemoteCertificateNameMismatch": false,
-      "IgnoreRemoteCertificateNotAvailable": false,
-      "SecurityProtocol": {
-        "Ssl3": false,
-        "Tls": false,
-        "Tls11": true,
-        "Tls12": true
+  "Promat": {
+    "EmailSender": {
+      "Smtp": {
+        "Host": "smtp.myEmailServer.com",
+        "Port": 587,
+        "TlsEnabled": true,
+        "User": "user@myEmailServer.com",
+        "Password": "******************",
+        "DefaultFromEmail": "Optional: MyApplicationEmail@MyDomain.com",
+        "DefaultFromName": "Optional: My application name",
+        "Proxy": "Optional:https://myproxy:port",
+        "IgnoreRemoteCertificateChainErrors": false,
+        "IgnoreRemoteCertificateNameMismatch": false,
+        "IgnoreRemoteCertificateNotAvailable": false,
+        "SecurityProtocol": {
+          "Ssl3": false,
+          "Tls": false,
+          "Tls11": true,
+          "Tls12": true
+        }
       }
     }
   }
 }
 ```
-Según el uso, sólo tendremos que definir el bloque "SendGrid" o el bloque "Smtp".
-Los campos de configuración obligatorios según si queremos usar SendGrid o SMTP son:
-- SendGrid: 
-	- PromatEmailSender -> SendGrid
-		- ApiKey
-- Stmp: 
-	- PromatEmailSender -> Smtp -> 
-		- Host
-		- Port
-		- User
-		- Password
+Los campos de configuración obligatorios son:
+	- Promat
+      - EmailSender 
+        - Smtp 
+		  - Host
+		  - Port
+		  - User
+		  - Password
 
 Para utilizar el envío por **SendGrid** en nuestra app debemos agregar los servicios en la clase **startup.cs**
 ```csharp
@@ -83,7 +81,7 @@ public class Startup
 }
 ```
 
-De igual modo si queremos utilizar el envío por **STMP**
+Para utilizar el envío **STMP** en nuestra app debemos agregar los servicios en la clase **startup.cs** o en el sitio correspondiente donde registremos los servicios en el contenedor de inyección de dependencias
 ```csharp
 public class Startup
 {
@@ -107,23 +105,15 @@ Si quisiésemos **recuperar configuración** mediante el ID
 ```csharp
 public class MyService
 {
-	// Contiene toda la configuración del paquete
-    private readonly PromatEmailSenderOptions _promatEmailSenderOptions;
-    // Contiene la configuración referente a SendGrid
-    private readonly SendGridOptions _sendGridOptions;
-    // Contiene la configuración referente a SMTP
+    // Contiene la configuración referente a PromatEmailSender SMTP
     private readonly SmtpOptions _smtpOptions;
     // Contiene la configuración referente a los protocolos de seguridad 
     // de la capa de transporte
     private readonly SecurityProtocolOptions _securityProtocolOptions;
     
-    public MyService(IOptions<PromatEmailSenderOptions> promatEmailSenderOptions, 
-					 IOptions<SendGridOptions> sendGridOptions, 
-					 IOptions<SmtpOptions > smtpOptions,
+    public MyService(IOptions<SmtpOptions > smtpOptions,
 					 IOptions<SecurityProtocolOptions > securityProtocolOptions)
     {
-        _promatEmailSenderOptions = promatEmailSenderOptions.Value;
-        _sendGridOptions= sendGridOptions.Value;
         _smtpOptions= smtpOptions.Value;
         _securityProtocolOptions= securityProtocolOptions.Value;
     }

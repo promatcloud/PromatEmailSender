@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <PackageId>Promat.EmailSender.Smtp</PackageId>
+    <Authors>Promat Team</Authors>
+    <Version>1.0.0</Version>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Company>Promat Asesoría técnica de servicios</Company>
+    <Description>Simple library in net standard to send emails via SMTP.</Description>
+    <PackageTags>smtp email csharp netstandard</PackageTags>
+    <Copyright>Promat Asesoría técnica de servicios</Copyright>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/promatcloud/PromatEmailSender</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/promatcloud/PromatEmailSender</RepositoryUrl>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Product>Promat.EmailSender.Smtp</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Promat.EmailSender.Common\Promat.EmailSender.Common.csproj" />
+  </ItemGroup>
+
+</Project>

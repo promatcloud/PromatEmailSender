@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+      <PackageId>Promat.EmailSender.MailMaker</PackageId>
+      <Authors>Promat Team</Authors>
+      <Version>1.0.0</Version>
+      <PackageVersion>1.0.0</PackageVersion>
+      <Company>Promat Asesoría técnica de servicios</Company>
+      <Description>Simple library in net standard to compose HTML mails.</Description>
+      <PackageTags>email csharp netstandard</PackageTags>
+      <Copyright>Promat Asesoría técnica de servicios</Copyright>
+      <PackageIcon>icon.png</PackageIcon>
+      <PackageProjectUrl>https://github.com/promatcloud/PromatEmailSender</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/promatcloud/PromatEmailSender</RepositoryUrl>
+      <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+      <Product>Promat.EmailSender.MailMaker</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Promat.EmailSender.Common\Promat.EmailSender.Common.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Promat.EmailSender.MailMaker;
+using Promat.EmailSender.MailMaker.Enums;
+using Promat.EmailSender.Smtp;
+using System;
 using System.Drawing;
 using System.Threading.Tasks;
-using Promat.EmailSender;
-using Promat.EmailSender.MailTemplate;
-using Promat.EmailSender.MailTemplate.Enums;
 
 namespace Console.Net4._7._2
 {
@@ -49,7 +49,7 @@ namespace Console.Net4._7._2
             System.Console.Write("Mensaje: ");
             var message = System.Console.ReadLine();
 
-            var emailSender = new SmtpSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled);
+            var emailSender = new EmailSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled);
             emailSender.EnableTls11SecurityProtocol();
             emailSender.EnableTls12SecurityProtocol();
             await emailSender.SendEmailAsync(to, subject, null, message);
@@ -70,8 +70,8 @@ namespace Console.Net4._7._2
             };
 
             var color = Color.FromArgb(235, 199, 127);
-            var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null)
-                   
+            var mailMaker = MailMaker.New(new EmailSender(SmtpHost, SmtpPort, SmtpUser, SmtpPassword, SmtpTlsEnabled))
+
                     .Configure()
                     .BackgroundEvenLine("#CCC")
                     .BackgroundOddLine(Color.Beige)
@@ -82,7 +82,7 @@ namespace Console.Net4._7._2
                     .SetPercentageTwoColumn(20)
                     .SetPercentageThreeColumn(50, 50)
                     .SetCorreoWidth(500)
-                    
+
 
                     .EndConfiguration()
 
@@ -94,7 +94,7 @@ namespace Console.Net4._7._2
                     .AddLineWithImage(
                         "https://raw.githubusercontent.com/promatcloud/Branding/master/AnimalFeeding/CirculoVerdeClaro_032.png",
                         "Texto imagen izquierda", "Texto imagen derecha", 20, true, false)
-                    
+
                 ;
             var htmlMailMaker = mailMaker.GetHtml();
             System.Console.WriteLine(htmlMailMaker);
