@@ -1,118 +1,14 @@
 <h1 align="center">
- MailTemplate
+ MailMaker
 </h1>
 
 Plantilla simple para gestionar la información en un envio por mail
 
-MailTemplate está diponible por **NuGet [PromatEmailSender](https://www.nuget.org/packages/PromatEmailSender/)**
+MailMaker está diponible por **NuGet [Promat.EmailSender.MailMaker](https://www.nuget.org/packages/Promat.EmailSender.MailMaker/)**
 
 # Generalidades
-La Plantilla está implementad en nerstandard 2, por lo que puede ser usada en todo tipo de prroyectos:
- - El uso en core se puede realizar mediante el inyector de dependencias y configurar las generalidades en appsettings (o cualquier método de configuración establecido en la app).
- - En full framework tendremos que instanciar la clase que queramos usar facilitándole los datos de configuración en el constructor.
+La Plantilla está implementad en nerstandard 2, por lo que puede ser usada en todo tipo de prroyectos.
 
-# Net Core
-Configuración:
-```json
-{
-  "PromatEmailSender": {
-    "DefaultFromEmail": "Optional: MyApplicationEmail@MyDomain.com",
-    "DefaultFromName": "Optional: My application name",
-    "Proxy": "Optional:https://myproxy:port",
-    "SendGrid": {
-      "ApiKey": "MySendGridApiKey"
-    },
-    "Smtp": {
-      "Host": "smtp.myEmailServer.com",
-      "Port": 587,
-      "TlsEnabled": true,
-      "User": "user@myEmailServer.com",
-      "Password": "******************",
-      "IgnoreRemoteCertificateChainErrors": false,
-      "IgnoreRemoteCertificateNameMismatch": false,
-      "IgnoreRemoteCertificateNotAvailable": false,
-      "SecurityProtocol": {
-        "Ssl3": false,
-        "Tls": false,
-        "Tls11": true,
-        "Tls12": true
-      }
-    }
-  }
-}
-```
-Según el uso, sólo tendremos que definir el bloque "SendGrid" o el bloque "Smtp".
-Los campos de configuración obligatorios según si queremos usar SendGrid o SMTP son:
-- SendGrid: 
-	- PromatEmailSender -> SendGrid
-		- ApiKey
-- Stmp: 
-	- PromatEmailSender -> Smtp -> 
-		- Host
-		- Port
-		- User
-		- Password
-    
-Para utilizar el envío por **MailMaker** en nuestra app debemos agregar los servicios en la clase **startup.cs**
-```csharp
-public class Startup
-{
-    public IConfiguration Configuration { get; }
-    
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-	    // some code
-        services.AddMailMaker();
-	    // some code
-    }
-}
-```
-
-De igual modo si queremos utilizar el envío por **MailMaker** recuperamos el servicio 
-```csharp
-
-class Program
-{    
-    static async Task Main(string[] args)
-    {
-        var host = CreateHost(builder);
-        await EmailTemplateTest(host);
-    }
-    
-    static async Task EmailTemplateTest(IHost host)
-    {      
-        var mailMaker = host.Services.GetRequiredService<IMailMaker>()
-    }
-}
-```
-# Uso en Full Framework
-En full framework nos construimos la clase del MailMaker que nos interese de forma manual pasandole en el constructor la información necesaria, Por ejemplo:
-```csharp
-
-class Program
-{
-    private const string SmtpHost = "mail.server.com";
-    private const int SmtpPort = 587;
-    private const bool SmtpTlsEnabled = true;
-    private const string SmtpUser = "user@server.com";
-    private const string SmtpPassword = "**********************";
-    
-    static async Task Main(string[] args)
-    {
-        await EmailTemplateTest();
-    }
-
-    private static async Task EmailTemplateTest()
-    {      
-        var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null); 
-    }
-}
-```
 # Uso de MailConfigurator
 Tenemos diferentes métodos para hacer configuraciones generales desde el objeto MailConfigurator, estas configuraciones son usadas a la hora de solicitar la plantilla al objeto MailMaker. Inicializado el objeto MailMaker tenemos que llamar al método Configure() para empezar las configuraciones generales. Una vez configurado todo lo deseado invocaremos al método EndConfiguration() para salir de las configuraciones. Todo ello se realiza por medio de métodos encadenados.
 Ejemplo:
@@ -121,8 +17,7 @@ Ejemplo:
 
 private static async Task EmailTemplateTest()
 {      
-	var mailMaker = MailMaker.New(new MailConfigurator(),new SmtpSender(SmtpHost,SmtpPort,SmtpUser,SmtpPassword,SmtpTlsEnabled),null)
-
+	var mailMaker = MailMaker.New();
            mailMaker.Configure()
                 .BackgroundEvenLine("#CCC")
                 .BackgroundOddLine(Color.Beige)
@@ -177,3 +72,4 @@ Ejemplo:
             var htmlMailMaker = mailMaker.GetHtml();
             System.Console.WriteLine(htmlMailMaker);
         }
+```

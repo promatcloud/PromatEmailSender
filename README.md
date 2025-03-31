@@ -8,15 +8,17 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/e6m2m84bn51mq7t8?svg=true)](https://ci.appveyor.com/project/promatcloud/promatemailsender)
  
-[![NuGet version](https://badge.fury.io/nu/PromatEmailSender.svg)](https://badge.fury.io/nu/PromatEmailSender) **Promat.EmailSender.Smtp**
+[![NuGet version](https://badge.fury.io/nu/Promat.EmailSender.Smtp.svg)](https://badge.fury.io/nu/Promat.EmailSender.Smtp) **Promat.EmailSender.Smtp**
+
+[![NuGet version](https://badge.fury.io/nu/Promat.EmailSender.MailMaker.svg)](https://badge.fury.io/nu/Promat.EmailSender.MailMaker) **Promat.EmailSender.MailMaker**
 
 </div>
 Simple library in net standard to send emails via SMTP
 
-Está diponible por **NuGet [Promat.EmailSender.Smtp](https://www.nuget.org/packages/PromatEmailSender/)**
+Paquetes **NuGet** disponibles **[Promat.EmailSender.Smtp](https://www.nuget.org/packages/Promat.EmailSender.Smtp/)** y **[Promat.EmailSender.MailMaker](https://www.nuget.org/packages/Promat.EmailSender.MailMaker/)**
 
 Plantilla simple para gestionar la información en un envio por mail 
-**[MailTemplate](https://github.com/promatcloud/PromatEmailSender/blob/master/Promat.EmailSender/MailTemplate/).**
+**[MailMaker](https://github.com/promatcloud/PromatEmailSender/blob/master/Promat.EmailSender.MailMaker/).**
 
 # Generalidades
 La librería está implementada en netstandard 2, por lo que puede ser usada en todo tipo de proyectos:
